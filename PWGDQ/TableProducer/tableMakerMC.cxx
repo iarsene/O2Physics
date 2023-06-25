@@ -408,7 +408,7 @@ struct TableMakerMC {
         mcflags = 0;
         int i = 0;
         for (auto& sig : fMCSignals) {
-          if (sig.CheckSignal(true, mcTracks, mctrack)) {
+          if (sig.CheckSignal(true, mctrack)) {
             mcflags |= (uint16_t(1) << i);
           }
           i++;
@@ -523,7 +523,7 @@ struct TableMakerMC {
           int j = 0; // runs over the track cuts
           // check all the specified signals and fill histograms for MC truth matched tracks
           for (auto& sig : fMCSignals) {
-            if (sig.CheckSignal(true, mcTracks, mctrack)) {
+            if (sig.CheckSignal(true, mctrack)) {
               mcflags |= (uint16_t(1) << i);
               if (fDoDetailedQA) {
                 j = 0;
@@ -680,7 +680,7 @@ struct TableMakerMC {
           int j = 0; // runs over the track cuts
           // check all the specified signals and fill histograms for MC truth matched tracks
           for (auto& sig : fMCSignals) {
-            if (sig.CheckSignal(true, mcTracks, mctrack)) {
+            if (sig.CheckSignal(true, mctrack)) {
               mcflags |= (uint16_t(1) << i);
               if (fDoDetailedQA) {
                 fHistMan->FillHistClass(Form("Muons_BeforeCuts_%s", sig.GetName()), VarManager::fgValues); // fill the reconstructed truth BeforeCuts
