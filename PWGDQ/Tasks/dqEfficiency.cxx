@@ -22,7 +22,6 @@
 #include "Framework/runDataProcessing.h"
 #include "Framework/AnalysisTask.h"
 #include "Framework/AnalysisDataModel.h"
-#include "Framework/ASoAHelpers.h"
 #include "PWGDQ/DataModel/ReducedInfoTables.h"
 #include "PWGDQ/Core/VarManager.h"
 #include "PWGDQ/Core/HistogramManager.h"
@@ -32,12 +31,8 @@
 #include "PWGDQ/Core/CutsLibrary.h"
 #include "PWGDQ/Core/MCSignal.h"
 #include "PWGDQ/Core/MCSignalLibrary.h"
-#include "DataFormatsParameters/GRPObject.h"
 #include "CCDB/BasicCCDBManager.h"
 #include "DataFormatsParameters/GRPMagField.h"
-#include "Field/MagneticField.h"
-#include "TGeoGlobalMagField.h"
-#include "DetectorsBase/Propagator.h"
 #include "DetectorsBase/GeometryManager.h"
 
 using std::cout;
@@ -810,7 +805,7 @@ struct AnalysisSameEventPairing {
   }   // end runPairing
 
   template <typename TTracksMC>
-  void runMCGen(TTracksMC const& groupedMCTracks)
+  void runMCGen(TTracksMC& groupedMCTracks)
   {
     // loop over mc stack and fill histograms for pure MC truth signals
     // group all the MC tracks which belong to the MC event corresponding to the current reconstructed event
@@ -824,7 +819,14 @@ struct AnalysisSameEventPairing {
         if (sig.GetNProngs() != 1) { // NOTE: 1-prong signals required
           continue;
         }
-        if (sig.CheckSignal(false, mctrack)) {
+        bool checked = false;
+        if constexpr(soa::is_soa_filtered_v<TTracksMC>) {
+          auto mctrack_raw = groupedMCTracks.rawIteratorAt(mctrack.globalIndex());
+          checked = sig.CheckSignal(false, mctrack_raw);
+        } else {
+          checked = sig.CheckSignal(false, mctrack);
+        }
+        if (checked) {
           fHistMan->FillHistClass(Form("MCTruthGen_%s", sig.GetName()), VarManager::fgValues);
         }
       }
@@ -836,7 +838,15 @@ struct AnalysisSameEventPairing {
         continue;
       }
       for (auto& [t1, t2] : combinations(groupedMCTracks, groupedMCTracks)) {
-        if (sig.CheckSignal(false, t1, t2)) {
+        bool checked = false;
+        if constexpr(soa::is_soa_filtered_v<TTracksMC>) {
+          auto t1_raw = groupedMCTracks.rawIteratorAt(t1.globalIndex());
+          auto t2_raw = groupedMCTracks.rawIteratorAt(t2.globalIndex());
+          checked = sig.CheckSignal(false, t1_raw, t2_raw);
+        } else {
+          checked = sig.CheckSignal(false, t1, t2);
+        }
+        if (checked) {
           VarManager::FillPairMC(t1, t2);
           fHistMan->FillHistClass(Form("MCTruthGenPair_%s", sig.GetName()), VarManager::fgValues);
         }
