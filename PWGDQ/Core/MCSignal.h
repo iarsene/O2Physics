@@ -130,6 +130,7 @@ class MCSignal : public TNamed
 template <typename T>
 bool MCSignal::CheckProng(int i, bool checkSources, const T& track)
 {
+  using P = typename T::parent_t;
   auto currentMCParticle = track;
   // loop over the generations specified for this prong
   for (int j = 0; j < fProngs[i].fNGenerations; j++) {
@@ -159,7 +160,7 @@ bool MCSignal::CheckProng(int i, bool checkSources, const T& track)
         LOGF(debug, "M2 %d %d", mcParticle.globalIndex(), m.globalIndex());
       }*/
       if (currentMCParticle.has_mothers() && j < fProngs[i].fNGenerations - 1) {
-        currentMCParticle = currentMCParticle.mothers_first_as<>();
+        currentMCParticle = currentMCParticle.template mothers_first_as<P>();
         //currentMCParticle = mcStack.iteratorAt(currentMCParticle.mothersIds()[0]);
         // currentMCParticle = currentMCParticle.template mother0_as<U>();
       }
@@ -169,7 +170,7 @@ bool MCSignal::CheckProng(int i, bool checkSources, const T& track)
         return false;
       }
       if (currentMCParticle.has_daughters() && j < fProngs[i].fNGenerations - 1) {
-        const auto& daughtersSlice = currentMCParticle.daughters_as<>();
+        const auto& daughtersSlice = currentMCParticle.template daughters_as<P>();
         for (auto& d : daughtersSlice) {
           if (fProngs[i].TestPDG(j + 1, d.pdgCode())) {
             // currentMCParticle = d;
@@ -235,7 +236,7 @@ bool MCSignal::CheckProng(int i, bool checkSources, const T& track)
           /*for (auto& m : mcParticle.mothers_as<aod::McParticles_001>()) {
             LOGF(debug, "M2 %d %d", mcParticle.globalIndex(), m.globalIndex());
           }*/
-          currentMCParticle = currentMCParticle.mothers_first_as<>();
+          currentMCParticle = currentMCParticle.template mothers_first_as<P>();
           //currentMCParticle = mcStack.iteratorAt(currentMCParticle.mothersIds()[0]);
           // currentMCParticle = currentMCParticle.template mother0_as<U>();
         }
@@ -251,7 +252,7 @@ bool MCSignal::CheckProng(int i, bool checkSources, const T& track)
           return false;
         }
         if (currentMCParticle.has_daughters() && j < fProngs[i].fNGenerations - 1) {
-          const auto& daughtersSlice = currentMCParticle.daughters_as<>();
+          const auto& daughtersSlice = currentMCParticle.template daughters_as<P>();
           for (auto& d : daughtersSlice) {
             if (fProngs[i].TestPDG(j + 1, d.pdgCode())) {
               // currentMCParticle = d;
