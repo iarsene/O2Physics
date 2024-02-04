@@ -1155,7 +1155,7 @@ void VarManager::FillTrack(T const& track, float* values)
       values[kIsProtonFromLambdaAndAntiLambda] = static_cast<bool>((values[kIsLegFromLambda] * track.sign() > 0) || (values[kIsLegFromAntiLambda] * (-track.sign()) > 0));
 
       for (int i = 0; i < 8; i++) {
-        values[kIsDalitzLeg + i] = track.filteringFlags_bit(7+i);
+        values[kIsDalitzLeg + i] = track.filteringFlags_bit(7 + i);
       }
     }
   }
@@ -1483,7 +1483,8 @@ void VarManager::FillTrack(T const& track, float* values)
 }
 
 template <uint32_t fillMap, typename T, typename C>
-void VarManager::FillTrackCollision(T const& track, C const& collision, float* values) {
+void VarManager::FillTrackCollision(T const& track, C const& collision, float* values)
+{
 
   if (!values) {
     values = fgValues;
@@ -1495,7 +1496,7 @@ void VarManager::FillTrackCollision(T const& track, C const& collision, float* v
 
     values[kTrackDCAxy] = dca[0];
     values[kTrackDCAz] = dca[1];
-    
+
     if constexpr ((fillMap & ReducedTrackBarrelCov) > 0 || (fillMap & TrackCov) > 0) {
       if (fgUsedVars[kTrackDCAsigXY]) {
         values[kTrackDCAsigXY] = dca[0] / std::sqrt(track.cYY());

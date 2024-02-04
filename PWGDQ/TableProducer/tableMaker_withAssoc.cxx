@@ -147,7 +147,7 @@ struct TableMaker {
   Produces<ReducedMFTs> mftTrack;
   Produces<ReducedMFTsExtra> mftTrackExtra;
   Produces<ReducedMFTAssoc> mftAssoc;
-  
+
   OutputObj<THashList> fOutputList{"output"}; //! the histogram manager output list
   OutputObj<TList> fStatsList{"Statistics"};  //! skimming statistics
   HistogramManager* fHistMan;
@@ -163,7 +163,7 @@ struct TableMaker {
   Configurable<std::string> fConfigAddEventHistogram{"cfgAddEventHistogram", "", "Comma separated list of histograms"};
   Configurable<std::string> fConfigAddTrackHistogram{"cfgAddTrackHistogram", "", "Comma separated list of histograms"};
   Configurable<std::string> fConfigAddMuonHistogram{"cfgAddMuonHistogram", "", "Comma separated list of histograms"};
-  
+
   // Selections to be applied as Filter on the Track and FwdTrack
   Configurable<bool> fIsRun2{"cfgIsRun2", false, "Whether we analyze Run-2 or Run-3 data"};
   Configurable<float> fConfigBarrelTrackMaxAbsEta{"cfgBarrelMaxAbsEta", 0.9f, "Eta absolute value cut for tracks in the barrel"};
@@ -174,7 +174,7 @@ struct TableMaker {
   Configurable<bool> fConfigBarrelRequireITS{"cfgBarrelRequireITS", true, "Require ITS for tracks in the barrel"};
   Configurable<float> fConfigBarrelMaxITSchi2{"cfgBarrelMaxITSchi2", 36.0f, "Maximum ITS chi2/ndf for tracks in the barrel"};
   Configurable<float> fConfigMuonPtLow{"cfgMuonLowPt", 1.0f, "Low pt cut for muons"};
-  
+
   // CCDB connection configurables
   Configurable<string> fConfigCcdbUrl{"ccdb-url", "http://alice-ccdb.cern.ch", "url of the ccdb repository"};
   Configurable<string> fConfigCcdbPathTPC{"ccdb-path-tpc", "Users/z/zhxiong/Postcalib/pass4/apass3BB", "base path to the ccdb object"};
@@ -190,7 +190,7 @@ struct TableMaker {
   Configurable<bool> fConfigIsOnlyforMaps{"cfgIsforMaps", false, "If true, run for postcalibration maps only"};
   Configurable<bool> fConfigSaveElectronSample{"cfgSaveElectronSample", false, "If true, only save electron sample"};
   Configurable<bool> fConfigDummyRunlist{"cfgDummyRunlist", false, "If true, use dummy runlist"};
-  Configurable<int> fConfigInitRunNumber{"cfgInitRunNumber", 543215, "Initial run number used in run by run checks"};  
+  Configurable<int> fConfigInitRunNumber{"cfgInitRunNumber", 543215, "Initial run number used in run by run checks"};
 
   Service<o2::ccdb::BasicCCDBManager> fCCDB;
 
@@ -206,20 +206,20 @@ struct TableMaker {
   int fCurrentRun;            // needed to detect if the run changed and trigger update of calibrations etc.
 
   // maps used to store index info; NOTE: std::map are sorted in ascending order by default (needed for track to collision indices)
-  std::map<uint32_t, uint32_t> fCollIndexMap;       // key: old collision index, value: skimmed collision index 
-  std::map<uint32_t, uint32_t> fTrackIndexMap;     // key: old track global index, value: new track global index
-  std::map<uint32_t, uint32_t> fFwdTrackIndexMap;   // key: fwd-track global index, value: new fwd-track global index
+  std::map<uint32_t, uint32_t> fCollIndexMap;             // key: old collision index, value: skimmed collision index
+  std::map<uint32_t, uint32_t> fTrackIndexMap;            // key: old track global index, value: new track global index
+  std::map<uint32_t, uint32_t> fFwdTrackIndexMap;         // key: fwd-track global index, value: new fwd-track global index
   std::map<uint32_t, uint32_t> fFwdTrackIndexMapReversed; // key: new fwd-track global index, value: fwd-track global index
-  std::map<uint32_t, uint64_t> fFwdTrackFilterMap;  // key: fwd-track global index, value: fwd-track filter map
-  std::map<uint32_t, uint32_t> fMftIndexMap;        // key: MFT tracklet global index, value: new MFT tracklet global index
+  std::map<uint32_t, uint64_t> fFwdTrackFilterMap;        // key: fwd-track global index, value: fwd-track filter map
+  std::map<uint32_t, uint32_t> fMftIndexMap;              // key: MFT tracklet global index, value: new MFT tracklet global index
 
-  // FIXME: For now, the skimming is done using the Common track-collision association task, which does not allow to use 
+  // FIXME: For now, the skimming is done using the Common track-collision association task, which does not allow to use
   //       our own Filtered tracks. If the filter is very selective, then it may be worth to run the association in this workflow
   //       using the Common/CollisionAssociation class
-  /*Filter barrelSelectedTracks = ifnode(fIsRun2.node() == true, track::trackType == uint8_t(track::Run2Track), track::trackType == uint8_t(track::Track)) 
+  /*Filter barrelSelectedTracks = ifnode(fIsRun2.node() == true, track::trackType == uint8_t(track::Run2Track), track::trackType == uint8_t(track::Track))
                               && track::pt > fConfigBarrelTrackMinPt
-                              && nabs(track::eta) <= fConfigBarrelTrackMaxAbsEta 
-                              && ifnode(fConfigBarrelRequireITS.node() == true, track::itsChi2NCl < fConfigBarrelMaxITSchi2, true) 
+                              && nabs(track::eta) <= fConfigBarrelTrackMaxAbsEta
+                              && ifnode(fConfigBarrelRequireITS.node() == true, track::itsChi2NCl < fConfigBarrelMaxITSchi2, true)
                               && ifnode(fConfigBarrelRequireTPC.node() == true, track::tpcNClsFound > fConfigBarrelMinTPCncls && track::tpcChi2NCl < fConfigBarrelMaxTPCchi2, true);
 
   Filter muonFilter = o2::aod::fwdtrack::pt >= fConfigMuonPtLow;*/
@@ -259,29 +259,29 @@ struct TableMaker {
       histClasses += "Event_AfterCuts;";
     }
 
-/*
-    bool enableBarrelHistos = (context.mOptions.get<bool>("processFull") || context.mOptions.get<bool>("processFullWithCov") ||
-                               context.mOptions.get<bool>("processFullWithCent") || context.mOptions.get<bool>("processFullWithCovAndEventFilter") ||
-                               context.mOptions.get<bool>("processFullWithCovMultsAndEventFilter") ||
-                               context.mOptions.get<bool>("processBarrelOnly") || context.mOptions.get<bool>("processBarrelOnlyWithCent") || context.mOptions.get<bool>("processBarrelOnlyWithCovWithCent") ||
-                               context.mOptions.get<bool>("processBarrelOnlyWithMults") || context.mOptions.get<bool>("processBarrelOnlyWithCentAndMults") || context.mOptions.get<bool>("processBarrelOnlyWithCovWithCentAndMults") ||
-                               context.mOptions.get<bool>("processBarrelOnlyWithCov") || context.mOptions.get<bool>("processBarrelOnlyWithEventFilter") ||
-                               context.mOptions.get<bool>("processBarrelOnlyWithMultsAndEventFilter") || context.mOptions.get<bool>("processBarrelOnlyWithCovAndEventFilter") ||
-                               context.mOptions.get<bool>("processBarrelOnlyWithDalitzBits") || context.mOptions.get<bool>("processBarrelOnlyWithV0Bits") ||
-                               context.mOptions.get<bool>("processBarrelOnlyWithV0BitsAndMaps") || context.mOptions.get<bool>("processAmbiguousBarrelOnly"));
-    bool enableMuonHistos = (context.mOptions.get<bool>("processFull") || context.mOptions.get<bool>("processFullWithCov") ||
-                             context.mOptions.get<bool>("processFullWithCent") || context.mOptions.get<bool>("processFullWithCovAndEventFilter") ||
-                             context.mOptions.get<bool>("processFullWithCovMultsAndEventFilter") ||
-                             context.mOptions.get<bool>("processMuonOnly") || context.mOptions.get<bool>("processMuonOnlyWithCent") ||
-                             context.mOptions.get<bool>("processMuonOnlyWithMults") || context.mOptions.get<bool>("processMuonOnlyWithCentAndMults") ||
-                             context.mOptions.get<bool>("processMuonOnlyWithCovAndCent") ||
-                             context.mOptions.get<bool>("processMuonOnlyWithCov") || context.mOptions.get<bool>("processMuonOnlyWithCovAndEventFilter") || context.mOptions.get<bool>("processMuonOnlyWithEventFilter") ||
-                             context.mOptions.get<bool>("processMuonOnlyWithMultsAndEventFilter") || context.mOptions.get<bool>("processAmbiguousMuonOnlyWithCov") || context.mOptions.get<bool>("processAmbiguousMuonOnly") ||
-                             context.mOptions.get<bool>("processMuonsAndMFT") || context.mOptions.get<bool>("processMuonsAndMFTWithFilter") || context.mOptions.get<bool>("processMuonMLOnly"));
-                             */
+    /*
+        bool enableBarrelHistos = (context.mOptions.get<bool>("processFull") || context.mOptions.get<bool>("processFullWithCov") ||
+                                   context.mOptions.get<bool>("processFullWithCent") || context.mOptions.get<bool>("processFullWithCovAndEventFilter") ||
+                                   context.mOptions.get<bool>("processFullWithCovMultsAndEventFilter") ||
+                                   context.mOptions.get<bool>("processBarrelOnly") || context.mOptions.get<bool>("processBarrelOnlyWithCent") || context.mOptions.get<bool>("processBarrelOnlyWithCovWithCent") ||
+                                   context.mOptions.get<bool>("processBarrelOnlyWithMults") || context.mOptions.get<bool>("processBarrelOnlyWithCentAndMults") || context.mOptions.get<bool>("processBarrelOnlyWithCovWithCentAndMults") ||
+                                   context.mOptions.get<bool>("processBarrelOnlyWithCov") || context.mOptions.get<bool>("processBarrelOnlyWithEventFilter") ||
+                                   context.mOptions.get<bool>("processBarrelOnlyWithMultsAndEventFilter") || context.mOptions.get<bool>("processBarrelOnlyWithCovAndEventFilter") ||
+                                   context.mOptions.get<bool>("processBarrelOnlyWithDalitzBits") || context.mOptions.get<bool>("processBarrelOnlyWithV0Bits") ||
+                                   context.mOptions.get<bool>("processBarrelOnlyWithV0BitsAndMaps") || context.mOptions.get<bool>("processAmbiguousBarrelOnly"));
+        bool enableMuonHistos = (context.mOptions.get<bool>("processFull") || context.mOptions.get<bool>("processFullWithCov") ||
+                                 context.mOptions.get<bool>("processFullWithCent") || context.mOptions.get<bool>("processFullWithCovAndEventFilter") ||
+                                 context.mOptions.get<bool>("processFullWithCovMultsAndEventFilter") ||
+                                 context.mOptions.get<bool>("processMuonOnly") || context.mOptions.get<bool>("processMuonOnlyWithCent") ||
+                                 context.mOptions.get<bool>("processMuonOnlyWithMults") || context.mOptions.get<bool>("processMuonOnlyWithCentAndMults") ||
+                                 context.mOptions.get<bool>("processMuonOnlyWithCovAndCent") ||
+                                 context.mOptions.get<bool>("processMuonOnlyWithCov") || context.mOptions.get<bool>("processMuonOnlyWithCovAndEventFilter") || context.mOptions.get<bool>("processMuonOnlyWithEventFilter") ||
+                                 context.mOptions.get<bool>("processMuonOnlyWithMultsAndEventFilter") || context.mOptions.get<bool>("processAmbiguousMuonOnlyWithCov") || context.mOptions.get<bool>("processAmbiguousMuonOnly") ||
+                                 context.mOptions.get<bool>("processMuonsAndMFT") || context.mOptions.get<bool>("processMuonsAndMFTWithFilter") || context.mOptions.get<bool>("processMuonMLOnly"));
+                                 */
 
     bool enableBarrelHistos = (context.mOptions.get<bool>("processFullWithFilter"));
-    bool enableMuonHistos = (context.mOptions.get<bool>("processFullWithFilter"));                                
+    bool enableMuonHistos = (context.mOptions.get<bool>("processFullWithFilter"));
 
     if (enableBarrelHistos) {
       if (fDoDetailedQA) {
@@ -445,10 +445,11 @@ struct TableMaker {
   }
 
   template <uint32_t TEventFillMap, typename TEvents>
-  void skimCollisions(TEvents const &collisions, BCsWithTimestamps const &bcs) {
+  void skimCollisions(TEvents const& collisions, BCsWithTimestamps const& bcs)
+  {
     // Skim collisions
     // NOTE: So far, collisions are filtered based on the user specified analysis cuts and the filterPP event filter.
-    //      The collision-track associations which point to an event that is not selected for writing are discarded!  
+    //      The collision-track associations which point to an event that is not selected for writing are discarded!
 
     fCollIndexMap.clear();
     int multTPC = -1.0;
@@ -463,7 +464,7 @@ struct TableMaker {
     int multTracklets = -1.0;
     int multTracksPV = -1.0;
     float centFT0C = -1.0;
-    
+
     for (const auto& collision : collisions) {
 
       for (int i = 0; i < kNaliases; i++) {
@@ -542,7 +543,7 @@ struct TableMaker {
         multZNC = collision.multZNC();
         multTracklets = collision.multTracklets();
         multTracksPV = collision.multNTracksPV();
-      } 
+      }
       if constexpr ((TEventFillMap & VarManager::ObjTypes::CollisionCent) > 0) {
         centFT0C = collision.centFT0C();
       }
@@ -555,16 +556,17 @@ struct TableMaker {
   }
 
   template <uint32_t TTrackFillMap, typename TEvent, typename TTracks>
-  void skimTracks(TEvent const &collision, BCsWithTimestamps const &bcs, TTracks const &tracks, TrackAssoc const &assocs) {
+  void skimTracks(TEvent const& collision, BCsWithTimestamps const& bcs, TTracks const& tracks, TrackAssoc const& assocs)
+  {
     // Skim the barrel tracks
     // Loop over the collision-track associations, retrieve the track, and apply track cuts for selection
     //     One can apply here cuts which depend on the association (e.g. DCA), which will discard (hopefully most) wrong associations.
     //     Tracks are written only once, even if they constribute to more than one association
-    
+
     uint64_t trackFilteringTag = uint64_t(0);
     uint64_t trackTempFilterMap = uint8_t(0);
-    
-    for (const auto &assoc : assocs) {
+
+    for (const auto& assoc : assocs) {
       auto track = assoc.template track_as<TTracks>();
 
       trackFilteringTag = uint64_t(0);
@@ -573,7 +575,7 @@ struct TableMaker {
       if (fDoDetailedQA) {
         fHistMan->FillHistClass("TrackBarrel_BeforeCuts", VarManager::fgValues);
       }
-      
+
       // apply track cuts and fill stats histogram
       int i = 0;
       for (auto cut = fTrackCuts.begin(); cut != fTrackCuts.end(); cut++, i++) {
@@ -618,20 +620,20 @@ struct TableMaker {
             continue;
           }
         }
-      }   // end if V0Bits
+      } // end if V0Bits
       if constexpr (static_cast<bool>(TTrackFillMap & VarManager::ObjTypes::DalitzBits)) {
         trackFilteringTag |= (uint64_t(track.dalitzBits()) << 5); // BIT5-12: Dalitz
       }
-      trackFilteringTag |= (uint64_t(trackTempFilterMap) << 13); // BIT13-...:  user track filters  
+      trackFilteringTag |= (uint64_t(trackTempFilterMap) << 13); // BIT13-...:  user track filters
       // write the track global index in the map for skimming (to make sure we have it just once)
       if (fTrackIndexMap.find(track.globalIndex()) == fTrackIndexMap.end()) {
         // NOTE: The collision ID that is written in the table is the one found in the first association for this track.
         //       However, in data analysis one should loop over associations, so this one should not be used.
         //      In the case of Run2-like analysis, there will be no associations, so this ID will be the one originally assigned in the AO2Ds (updated for the skims)
         uint32_t reducedEventIdx = fCollIndexMap[collision.globalIndex()];
-        // NOTE: trackBarrelInfo stores the index of the collision as in AO2D (for use in some cases where the analysis on skims is done 
+        // NOTE: trackBarrelInfo stores the index of the collision as in AO2D (for use in some cases where the analysis on skims is done
         //   in workflows where the original AO2Ds are also present)
-        trackBarrelInfo(collision.globalIndex(), collision.posX(), collision.posY(), collision.posZ());  
+        trackBarrelInfo(collision.globalIndex(), collision.posX(), collision.posY(), collision.posZ());
         trackBasic(reducedEventIdx, trackFilteringTag, track.pt(), track.eta(), track.phi(), track.sign(), 0);
         trackBarrel(track.x(), track.alpha(), track.y(), track.z(), track.snp(), track.tgl(), track.signed1Pt(),
                     track.tpcInnerParam(), track.flags(), track.itsClusterMap(), track.itsChi2NCl(),
@@ -660,16 +662,16 @@ struct TableMaker {
       }
       // write the skimmed collision - track association
       trackBarrelAssoc(fCollIndexMap[collision.globalIndex()], fTrackIndexMap[track.globalIndex()]);
-    }  // end loop over associations
-  }  // end skimTracks
-  
+    } // end loop over associations
+  }   // end skimTracks
 
   template <uint32_t TMFTFillMap, typename TEvent>
-  void skimMFT(TEvent const &collision, BCsWithTimestamps const &bcs, MFTTracks const &mfts, MFTTrackAssoc const &mftAssocs) {
+  void skimMFT(TEvent const& collision, BCsWithTimestamps const& bcs, MFTTracks const& mfts, MFTTrackAssoc const& mftAssocs)
+  {
     // Skim MFT tracks
     // So far no cuts are applied here
 
-    for (const auto &assoc : mftAssocs) {
+    for (const auto& assoc : mftAssocs) {
       auto track = assoc.template mfttrack_as<MFTTracks>();
 
       if (fConfigQA) {
@@ -690,7 +692,8 @@ struct TableMaker {
   }
 
   template <uint32_t TMuonFillMap, typename TEvent, typename TMuons>
-  void skimMuons(TEvent const &collision, BCsWithTimestamps const &bcs, TMuons const &muons, FwdTrackAssoc const &muonAssocs) {
+  void skimMuons(TEvent const& collision, BCsWithTimestamps const& bcs, TMuons const& muons, FwdTrackAssoc const& muonAssocs)
+  {
     // Skim the fwd-tracks (muons)
     // Loop over the collision-track associations, recompute track properties depending on the collision assigned, and apply track cuts for selection
     //     Muons are written only once, even if they constribute to more than one association,
@@ -704,14 +707,14 @@ struct TableMaker {
     uint32_t counter = 0;
     for (const auto& assoc : muonAssocs) {
       // get the muon
-      auto muon = assoc.template fwdtrack_as<TMuons>();      
-      
+      auto muon = assoc.template fwdtrack_as<TMuons>();
+
       trackFilteringTag = uint64_t(0);
       VarManager::FillTrack<TMuonFillMap>(muon);
       // NOTE: If a muon is associated to multiple collisions, depending on the selections,
       //       it may be accepted for some associations and rejected for other
       VarManager::FillPropagateMuon<TMuonFillMap>(muon, collision);
-      
+
       if (fDoDetailedQA) {
         fHistMan->FillHistClass("Muons_BeforeCuts", VarManager::fgValues);
       }
@@ -726,7 +729,7 @@ struct TableMaker {
           (reinterpret_cast<TH1I*>(fStatsList->At(2)))->Fill(static_cast<float>(i));
         }
       }
-      
+
       // don't skim the muon if no cut has passed
       if (!trackTempFilterMap) {
         continue;
@@ -737,24 +740,24 @@ struct TableMaker {
       if (fFwdTrackIndexMap.find(muon.globalIndex()) == fFwdTrackIndexMap.end()) {
         counter++;
         fFwdTrackIndexMap[muon.globalIndex()] = offset + counter;
-        fFwdTrackIndexMapReversed[offset+counter] = muon.globalIndex();
-        fFwdTrackFilterMap[muon.globalIndex()] = trackFilteringTag;  // store here the filtering tag so we don't repeat the cuts in the second iteration
-        if (muon.has_matchMCHTrack() && (fFwdTrackIndexMap.find(muon.matchMCHTrackId()) == fFwdTrackIndexMap.end())) {  // write also the matched MCH track
+        fFwdTrackIndexMapReversed[offset + counter] = muon.globalIndex();
+        fFwdTrackFilterMap[muon.globalIndex()] = trackFilteringTag;                                                    // store here the filtering tag so we don't repeat the cuts in the second iteration
+        if (muon.has_matchMCHTrack() && (fFwdTrackIndexMap.find(muon.matchMCHTrackId()) == fFwdTrackIndexMap.end())) { // write also the matched MCH track
           counter++;
           fFwdTrackIndexMap[muon.matchMCHTrackId()] = offset + counter;
-          fFwdTrackIndexMapReversed[offset+counter] = muon.matchMCHTrackId();
-          fFwdTrackFilterMap[muon.matchMCHTrackId()] = trackFilteringTag;  // store here the filtering tag so we don't repeat the cuts in the second iteration
+          fFwdTrackIndexMapReversed[offset + counter] = muon.matchMCHTrackId();
+          fFwdTrackFilterMap[muon.matchMCHTrackId()] = trackFilteringTag; // store here the filtering tag so we don't repeat the cuts in the second iteration
         }
       } else {
-        fFwdTrackFilterMap[muon.globalIndex()] |= trackFilteringTag;  // make a bitwise OR with previous existing cuts
+        fFwdTrackFilterMap[muon.globalIndex()] |= trackFilteringTag; // make a bitwise OR with previous existing cuts
       }
       // write the association table
       muonAssoc(fCollIndexMap[collision.globalIndex()], fFwdTrackIndexMap[muon.globalIndex()]);
-    }  // end loop over assocs
+    } // end loop over assocs
 
     // Now we have the full index map of selected muons so we can proceed with writing the muon tables
     // Special care needed for the MCH and MFT indices
-    for (const auto& [skimIdx , origIdx] : fFwdTrackIndexMapReversed) {
+    for (const auto& [skimIdx, origIdx] : fFwdTrackIndexMapReversed) {
       // get the muon
       auto muon = muons.rawIteratorAt(origIdx);
       uint32_t reducedEventIdx = fCollIndexMap[collision.globalIndex()];
@@ -764,7 +767,7 @@ struct TableMaker {
       //   So all the information which pertains to collision association or MFT associations should not be taken from the skimmed data, but recomputed at analysis time.
       uint32_t mchIdx = -1;
       uint32_t mftIdx = -1;
-      if (muon.trackType() == uint8_t(0) || muon.trackType() == uint8_t(2)) {    // MCH-MID (2) or global (0)
+      if (muon.trackType() == uint8_t(0) || muon.trackType() == uint8_t(2)) { // MCH-MID (2) or global (0)
         if (fFwdTrackIndexMap.find(muon.matchMCHTrackId()) != fFwdTrackIndexMap.end()) {
           mchIdx = fFwdTrackIndexMap[muon.matchMCHTrackId()];
         }
@@ -775,7 +778,7 @@ struct TableMaker {
       muonBasic(reducedEventIdx, mchIdx, mftIdx, fFwdTrackFilterMap[muon.globalIndex()], muon.pt(), muon.eta(), muon.phi(), muon.sign(), 0);
       muonExtra(muon.nClusters(), muon.pDca(), muon.rAtAbsorberEnd(),
                 muon.chi2(), muon.chi2MatchMCHMID(), muon.chi2MatchMCHMFT(),
-                muon.matchScoreMCHMFT(), 
+                muon.matchScoreMCHMFT(),
                 muon.mchBitMap(), muon.midBitMap(),
                 muon.midBoards(), muon.trackType(), muon.fwdDcaX(), muon.fwdDcaY(),
                 muon.trackTime(), muon.trackTimeRes());
@@ -786,14 +789,15 @@ struct TableMaker {
                 VarManager::fgValues[VarManager::kMuonCTglX], VarManager::fgValues[VarManager::kMuonCTglY], VarManager::fgValues[VarManager::kMuonCTglPhi], VarManager::fgValues[VarManager::kMuonCTglTgl], VarManager::fgValues[VarManager::kMuonC1Pt2X], VarManager::fgValues[VarManager::kMuonC1Pt2Y],
                 VarManager::fgValues[VarManager::kMuonC1Pt2Phi], VarManager::fgValues[VarManager::kMuonC1Pt2Tgl], VarManager::fgValues[VarManager::kMuonC1Pt21Pt2]);
       }
-    }  // end loop over selected muons
-  }  // end skimMuons
+    } // end loop over selected muons
+  }   // end skimMuons
 
   // Produce standard barrel + muon tables with event filter (typically for pp and p-Pb) ------------------------------------------------------
   template <uint32_t TEventFillMap, uint32_t TTrackFillMap, uint32_t TMuonFillMap, uint32_t TMFTFillMap, typename TEvents, typename TTracks, typename TMuons>
-  void fullSkimming(TEvents const &collisions, BCsWithTimestamps const &bcs,
-                    TTracks const &tracksBarrel, TMuons const &muons, MFTTracks const &mftTracks,
-                    TrackAssoc const &trackAssocs, FwdTrackAssoc const &fwdTrackAssocs, MFTTrackAssoc const &mftAssocs) {
+  void fullSkimming(TEvents const& collisions, BCsWithTimestamps const& bcs,
+                    TTracks const& tracksBarrel, TMuons const& muons, MFTTracks const& mftTracks,
+                    TrackAssoc const& trackAssocs, FwdTrackAssoc const& fwdTrackAssocs, MFTTrackAssoc const& mftAssocs)
+  {
 
     if (fCurrentRun != bcs.begin().runNumber()) {
       if (fConfigComputeTPCpostCalib) {
@@ -823,7 +827,7 @@ struct TableMaker {
       fCurrentRun = bcs.begin().runNumber();
     }
 
-    // skim collisions 
+    // skim collisions
     skimCollisions<TEventFillMap>(collisions, bcs);
     if (fCollIndexMap.size() == 0) {
       return;
@@ -872,15 +876,16 @@ struct TableMaker {
         auto groupedMuonIndices = fwdTrackAssocs.sliceBy(fwdtrackIndicesPerCollision, origIdx);
         skimMuons<TMuonFillMap>(collision, bcs, muons, groupedMuonIndices);
       }
-    }  // end loop over skimmed collisions
+    } // end loop over skimmed collisions
   }
 
-  // 
-  void processFullWithFilter(MyEventsWithMultsAndFilter const &collisions, BCsWithTimestamps const &bcs,
-                             MyBarrelTracksWithCov const &tracksBarrel,
-                             MyMuonsWithCov const &muons, MFTTracks const &mftTracks,
-                             TrackAssoc const &trackAssocs, FwdTrackAssoc const &fwdTrackAssocs, 
-                             MFTTrackAssoc const &mftAssocs) {
+  //
+  void processFullWithFilter(MyEventsWithMultsAndFilter const& collisions, BCsWithTimestamps const& bcs,
+                             MyBarrelTracksWithCov const& tracksBarrel,
+                             MyMuonsWithCov const& muons, MFTTracks const& mftTracks,
+                             TrackAssoc const& trackAssocs, FwdTrackAssoc const& fwdTrackAssocs,
+                             MFTTrackAssoc const& mftAssocs)
+  {
     fullSkimming<gkEventFillMapWithMultsAndEventFilter, gkTrackFillMapWithCov, gkMuonFillMapWithCov, gkMFTFillMap>(collisions, bcs, tracksBarrel, muons, mftTracks, trackAssocs, fwdTrackAssocs, mftAssocs);
   }
 
@@ -894,7 +899,7 @@ struct TableMaker {
     }
     (reinterpret_cast<TH2I*>(fStatsList->At(0)))->Fill(0.0, static_cast<float>(kNaliases));
   }
-  
+
   PROCESS_SWITCH(TableMaker, processFullWithFilter, "Build full DQ skimmed data model, w/ event filtering", false);
   PROCESS_SWITCH(TableMaker, processOnlyBCs, "Analyze the BCs to store sampled lumi", false);
 };

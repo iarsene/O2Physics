@@ -794,7 +794,7 @@ struct TableMaker {
     if constexpr ((TEventFillMap & VarManager::ObjTypes::EventFilter) > 0) {
       tag |= (collision.eventFilter() << 56);
     }
-    
+
     VarManager::ResetValues(0, VarManager::kNEventWiseVariables);
     // TODO: These variables cannot be filled in the VarManager for the moment as long as BCsWithTimestamps are used.
     //       So temporarily, we filled them here, in order to be available for eventual QA of the skimming

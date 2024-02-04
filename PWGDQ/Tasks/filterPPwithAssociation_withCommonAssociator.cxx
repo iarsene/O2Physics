@@ -346,7 +346,7 @@ struct DQMuonsSelection {
 
     for (auto& muon : muons) {
       filterMap = uint32_t(0);
-      
+
       VarManager::FillTrack<TMuonFillMap>(muon);
       if (fConfigQA) {
         fHistMan->FillHistClass("Muon_BeforeCuts", VarManager::fgValues);
@@ -420,7 +420,7 @@ struct DQTrackToCollisionAssociation {
     collisionAssociatorMuon.setBcWindow(bcWindowForOneSigma);
   }
 
-  void processAssocWithTime(Collisions const& collisions, 
+  void processAssocWithTime(Collisions const& collisions,
                             MyBarrelTracksSelected const& tracksUnfiltered, soa::Filtered<MyBarrelTracksSelected> const& tracks,
                             FwdTracks const& muons,
                             AmbiguousTracks const& ambiguousTracks, AmbiguousFwdTracks const& ambiguousFwdTracks, BCs const& bcs)
@@ -596,13 +596,13 @@ struct DQFilterPPTask {
         // get the tracks from the index stored in the association
         auto t1 = a1.template track_as<TTracks>();
         auto t2 = a2.template track_as<TTracks>();
-        
+
         // check the pairing mask and that the tracks share a cut bit
         pairFilter = pairingMask & t1.isDQBarrelSelected() & t2.isDQBarrelSelected();
         if (pairFilter == 0) {
           continue;
         }
-        
+
         // keep just opposite-sign pairs
         if (!fConfigFilterLsBarrelTracksPairs) {
           if (t1.sign() * t2.sign() > 0) {
@@ -654,7 +654,7 @@ struct DQFilterPPTask {
     if (pairingMask > 0) {
       // pairing is done using the collision grouped muon associations
       for (auto& [a1, a2] : combinations(muonAssocs, muonAssocs)) {
-        
+
         // get the real muon tracks
         auto t1 = a1.template fwdtrack_as<TMuons>();
         auto t2 = a2.template fwdtrack_as<TMuons>();
@@ -884,7 +884,7 @@ WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
     adaptAnalysisTask<DQEventSelectionTask>(cfgc),
     adaptAnalysisTask<DQBarrelTrackSelection>(cfgc),
     adaptAnalysisTask<DQMuonsSelection>(cfgc),
-    //adaptAnalysisTask<DQTrackToCollisionAssociation>(cfgc),
+    // adaptAnalysisTask<DQTrackToCollisionAssociation>(cfgc),
     adaptAnalysisTask<DQFilterPPTask>(cfgc)};
 }
 

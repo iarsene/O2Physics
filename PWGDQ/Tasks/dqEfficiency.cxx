@@ -776,7 +776,7 @@ struct AnalysisSameEventPairing {
 
       dileptonFilterMap = twoTrackFilter;
       dileptonMcDecision = mcDecision;
-      
+
       if constexpr (TPairType == VarManager::kDecayToEE) {
         dielectronList(event, VarManager::fgValues[VarManager::kMass], VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi], t1.sign() + t2.sign(), dileptonFilterMap, dileptonMcDecision);
         dielectronExtraList(t1.globalIndex(), t2.globalIndex(), VarManager::fgValues[VarManager::kVertexingTauz], VarManager::fgValues[VarManager::kVertexingLz], VarManager::fgValues[VarManager::kVertexingLxy]);

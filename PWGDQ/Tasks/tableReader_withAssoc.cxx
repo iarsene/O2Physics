@@ -56,11 +56,11 @@ namespace o2::aod
 {
 namespace dqanalysisflags
 {
-DECLARE_SOA_COLUMN(MixingHash, mixingHash, int);                         //! Hash used in event mixing
-DECLARE_SOA_COLUMN(IsEventSelected, isEventSelected, int);               //! Event decision
-DECLARE_SOA_BITMAP_COLUMN(IsBarrelSelected, isBarrelSelected, 32);       //! Barrel track decisions
-DECLARE_SOA_BITMAP_COLUMN(IsMuonSelected, isMuonSelected, 32);           //! Muon track decisions (joinable to ReducedMuonsAssoc)
-DECLARE_SOA_BITMAP_COLUMN(IsBarrelSelectedPrefilter, isBarrelSelectedPrefilter, 32);    //! Barrel prefilter decisions (joinable to ReducedTracksAssoc)
+DECLARE_SOA_COLUMN(MixingHash, mixingHash, int);                                     //! Hash used in event mixing
+DECLARE_SOA_COLUMN(IsEventSelected, isEventSelected, int);                           //! Event decision
+DECLARE_SOA_BITMAP_COLUMN(IsBarrelSelected, isBarrelSelected, 32);                   //! Barrel track decisions
+DECLARE_SOA_BITMAP_COLUMN(IsMuonSelected, isMuonSelected, 32);                       //! Muon track decisions (joinable to ReducedMuonsAssoc)
+DECLARE_SOA_BITMAP_COLUMN(IsBarrelSelectedPrefilter, isBarrelSelectedPrefilter, 32); //! Barrel prefilter decisions (joinable to ReducedTracksAssoc)
 // Bcandidate columns for ML analysis of B->Jpsi+K
 DECLARE_SOA_COLUMN(massBcandidate, MBcandidate, float);
 DECLARE_SOA_COLUMN(pTBcandidate, PtBcandidate, float);
@@ -73,10 +73,10 @@ DECLARE_SOA_COLUMN(CosPBcandidate, cosPBcandidate, float);
 DECLARE_SOA_COLUMN(Chi2Bcandidate, chi2Bcandidate, float);
 } // namespace dqanalysisflags
 
-DECLARE_SOA_TABLE(EventCuts, "AOD", "DQANAEVCUTS", dqanalysisflags::IsEventSelected);          //!  joinable to ReducedEvents
-DECLARE_SOA_TABLE(MixingHashes, "AOD", "DQANAMIXHASH", dqanalysisflags::MixingHash);           //!  joinable to ReducedEvents
-DECLARE_SOA_TABLE(BarrelTrackCuts, "AOD", "DQANATRKCUTS", dqanalysisflags::IsBarrelSelected);  //!  joinable to ReducedTracksAssoc
-DECLARE_SOA_TABLE(MuonTrackCuts, "AOD", "DQANAMUONCUTS", dqanalysisflags::IsMuonSelected);     //!  joinable to ReducedMuonsAssoc
+DECLARE_SOA_TABLE(EventCuts, "AOD", "DQANAEVCUTS", dqanalysisflags::IsEventSelected);           //!  joinable to ReducedEvents
+DECLARE_SOA_TABLE(MixingHashes, "AOD", "DQANAMIXHASH", dqanalysisflags::MixingHash);            //!  joinable to ReducedEvents
+DECLARE_SOA_TABLE(BarrelTrackCuts, "AOD", "DQANATRKCUTS", dqanalysisflags::IsBarrelSelected);   //!  joinable to ReducedTracksAssoc
+DECLARE_SOA_TABLE(MuonTrackCuts, "AOD", "DQANAMUONCUTS", dqanalysisflags::IsMuonSelected);      //!  joinable to ReducedMuonsAssoc
 DECLARE_SOA_TABLE(Prefilter, "AOD", "DQPREFILTER", dqanalysisflags::IsBarrelSelectedPrefilter); //!  joinable to ReducedTracksAssoc
 DECLARE_SOA_TABLE(BmesonCandidates, "AOD", "DQBMESONS", dqanalysisflags::massBcandidate, dqanalysisflags::pTBcandidate, dqanalysisflags::LxyBcandidate, dqanalysisflags::LxyzBcandidate, dqanalysisflags::LzBcandidate, dqanalysisflags::TauxyBcandidate, dqanalysisflags::TauzBcandidate, dqanalysisflags::CosPBcandidate, dqanalysisflags::Chi2Bcandidate);
 } // namespace o2::aod
@@ -120,9 +120,10 @@ constexpr static int pairTypeEMu = VarManager::kElectronMuon;
 void DefineHistograms(HistogramManager* histMan, TString histClasses, const char* histGroups); // defines histograms for all tasks
 
 template <typename TMap>
-void PrintBitMap(TMap map, int nbits) {
-  for (int i=0; i<nbits; i++) {
-    cout << ((map & (TMap(1) << i))>0 ? "1" : "0");
+void PrintBitMap(TMap map, int nbits)
+{
+  for (int i = 0; i < nbits; i++) {
+    cout << ((map & (TMap(1) << i)) > 0 ? "1" : "0");
   }
 }
 
@@ -154,7 +155,7 @@ struct AnalysisEventSelection {
       fHistMan->SetUseDefaultVariableNames(kTRUE);
       fHistMan->SetDefaultVarNames(VarManager::fgVariableNames, VarManager::fgVariableUnits);
       DefineHistograms(fHistMan, "Event_BeforeCuts;Event_AfterCuts;", fConfigAddEventHistogram.value.data()); // define all histograms
-      VarManager::SetUseVars(fHistMan->GetUsedVars());                                           // provide the list of required variables so that VarManager knows what to fill
+      VarManager::SetUseVars(fHistMan->GetUsedVars());                                                        // provide the list of required variables so that VarManager knows what to fill
       fOutputList.setObject(fHistMan->GetMainHistogramList());
     }
 
@@ -175,7 +176,7 @@ struct AnalysisEventSelection {
     // Reset the fValues array and fill event observables
     VarManager::ResetValues(0, VarManager::kNEventWiseVariables);
     VarManager::FillEvent<TEventFillMap>(event);
-    
+
     // if QA is requested fill histograms before event selections
     if (fConfigQA) {
       fHistMan->FillHistClass("Event_BeforeCuts", VarManager::fgValues); // automatically fill all the histograms in the class Event
@@ -213,7 +214,7 @@ struct AnalysisEventSelection {
 struct AnalysisTrackSelection {
   Produces<aod::BarrelTrackCuts> trackSel;
   OutputObj<THashList> fOutputList{"output"};
-  
+
   Configurable<string> fConfigCuts{"cfgTrackCuts", "jpsiO2MCdebugCuts2", "Comma separated list of barrel track cuts"};
   Configurable<bool> fConfigQA{"cfgQA", false, "If true, fill QA histograms"};
   Configurable<string> fConfigAddTrackHistogram{"cfgAddTrackHistogram", "", "Comma separated list of histograms"};
@@ -230,8 +231,8 @@ struct AnalysisTrackSelection {
 
   HistogramManager* fHistMan;
   std::vector<AnalysisCompositeCut> fTrackCuts;
-  
-  int fCurrentRun;        // current run (needed to detect run changes for loading CCDB parameters)
+
+  int fCurrentRun; // current run (needed to detect run changes for loading CCDB parameters)
 
   void init(o2::framework::InitContext&)
   {
@@ -261,7 +262,7 @@ struct AnalysisTrackSelection {
 
       VarManager::SetRunlist((TString)fConfigRunPeriods);
       DefineHistograms(fHistMan, histDirNames.Data(), fConfigAddTrackHistogram.value.data()); // define all histograms
-      VarManager::SetUseVars(fHistMan->GetUsedVars());                           // provide the list of required variables so that VarManager knows what to fill
+      VarManager::SetUseVars(fHistMan->GetUsedVars());                                        // provide the list of required variables so that VarManager knows what to fill
       fOutputList.setObject(fHistMan->GetMainHistogramList());
     }
     if (fConfigDummyRunlist) {
@@ -280,7 +281,7 @@ struct AnalysisTrackSelection {
   template <uint32_t TEventFillMap, uint32_t TTrackFillMap, typename TEvents, typename TTracks>
   void runTrackSelection(ReducedTracksAssoc const& assocs, TEvents const& events, TTracks const& tracks)
   {
-    if (fConfigComputeTPCpostCalib && events.size()>0 && fCurrentRun != events.begin().runNumber()) {
+    if (fConfigComputeTPCpostCalib && events.size() > 0 && fCurrentRun != events.begin().runNumber()) {
       auto calibList = fCCDB->getForTimeStamp<TList>(fConfigCcdbPathTPC.value, events.begin().timestamp());
       VarManager::SetCalibrationObject(VarManager::kTPCElectronMean, calibList->FindObject("mean_map_electron"));
       VarManager::SetCalibrationObject(VarManager::kTPCElectronSigma, calibList->FindObject("sigma_map_electron"));
@@ -329,11 +330,11 @@ struct AnalysisTrackSelection {
             fHistMan->FillHistClass(Form("TrackBarrel_%s", (*cut).GetName()), VarManager::fgValues);
           }
         }
-      }  // end loop over cuts
-      
+      } // end loop over cuts
+
       trackSel(filterMap);
-    }  // end loop over associations
-  }  // end runTrackSelection()
+    } // end loop over associations
+  }   // end runTrackSelection()
 
   void processSkimmed(ReducedTracksAssoc const& assocs, MyEventsSelected const& events, MyBarrelTracks const& tracks)
   {
@@ -371,8 +372,8 @@ struct AnalysisMuonSelection {
   HistogramManager* fHistMan;
   std::vector<AnalysisCompositeCut> fMuonCuts;
 
-  int fCurrentRun;                // current run kept to detect run changes and trigger loading params from CCDB
-  
+  int fCurrentRun; // current run kept to detect run changes and trigger loading params from CCDB
+
   void init(o2::framework::InitContext&)
   {
     fCurrentRun = 0;
@@ -398,10 +399,10 @@ struct AnalysisMuonSelection {
       }
 
       DefineHistograms(fHistMan, histDirNames.Data(), fConfigAddMuonHistogram.value.data()); // define all histograms
-      VarManager::SetUseVars(fHistMan->GetUsedVars());                          // provide the list of required variables so that VarManager knows what to fill
+      VarManager::SetUseVars(fHistMan->GetUsedVars());                                       // provide the list of required variables so that VarManager knows what to fill
       fOutputList.setObject(fHistMan->GetMainHistogramList());
     }
-    
+
     fCCDB->setURL(fConfigCcdbUrl.value);
     fCCDB->setCaching(true);
     fCCDB->setLocalObjectValidityChecking();
@@ -411,7 +412,7 @@ struct AnalysisMuonSelection {
   template <uint32_t TEventFillMap, uint32_t TMuonFillMap, typename TEvents, typename TMuons>
   void runMuonSelection(ReducedMuonsAssoc const& assocs, TEvents const& events, TMuons const& muons)
   {
-    if (events.size()>0 && fCurrentRun != events.begin().runNumber()) {
+    if (events.size() > 0 && fCurrentRun != events.begin().runNumber()) {
       o2::parameters::GRPMagField* grpmag = fCCDB->getForTimeStamp<o2::parameters::GRPMagField>(grpmagPath, events.begin().timestamp());
       if (grpmag != nullptr) {
         VarManager::SetMagneticField(grpmag->getNominalL3Field());
@@ -451,9 +452,9 @@ struct AnalysisMuonSelection {
             fHistMan->FillHistClass(Form("TrackMuon_%s", (*cut).GetName()), VarManager::fgValues);
           }
         }
-      }  // end loop over cuts
+      } // end loop over cuts
       muonSel(filterMap);
-    }  // end loop over assocs
+    } // end loop over assocs
   }
 
   void processSkimmed(ReducedMuonsAssoc const& assocs, MyEventsSelected const& events, MyMuonTracksWithCov const& muons)
@@ -474,8 +475,8 @@ struct AnalysisMuonSelection {
 //  with the sample of tracks to be used in downstream analysis (fConfigTrackCuts). If a pair is found to pass
 //  the pair prefilter cut (cfgPrefilterPairCut), the analysis track is tagged to be removed from analysis.
 struct AnalysisPrefilterSelection {
-  Produces<aod::Prefilter> prefilter;   // joinable with ReducedTracksAssoc
-  
+  Produces<aod::Prefilter> prefilter; // joinable with ReducedTracksAssoc
+
   // Configurables
   Configurable<std::string> fConfigPrefilterTrackCut{"cfgPrefilterTrackCut", "", "Prefilter track cut"};
   Configurable<std::string> fConfigPrefilterPairCut{"cfgPrefilterPairCut", "", "Prefilter pair cut"};
@@ -499,7 +500,7 @@ struct AnalysisPrefilterSelection {
     if (objArrayTrackCuts->GetEntries() == 0) {
       LOG(fatal) << " No track cuts to prefilter!";
     }
-    
+
     // get the list of cuts that were computed in the barrel track-selection task and create a bit mask
     //  to mark just the ones we want to apply a prefilter on
     fPrefilterMask = 0;
@@ -529,7 +530,7 @@ struct AnalysisPrefilterSelection {
     if (fPrefilterCutBit < 0) {
       LOG(fatal) << "No or incorrectly specified loose track prefilter cut";
     }
-    
+
     // setup the prefilter pair cut
     fPairCut = new AnalysisCompositeCut(true);
     TString pairCutStr = fConfigPrefilterPairCut.value;
@@ -545,12 +546,13 @@ struct AnalysisPrefilterSelection {
   }
 
   template <uint32_t TTrackFillMap, typename TTracks>
-  void runPrefilter(soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts> const& assocs, TTracks const& tracks) {
+  void runPrefilter(soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts> const& assocs, TTracks const& tracks)
+  {
 
     for (auto& [assoc1, assoc2] : o2::soa::combinations(assocs, assocs)) {
       auto track1 = assoc1.template reducedtrack_as<TTracks>();
       auto track2 = assoc2.template reducedtrack_as<TTracks>();
-      
+
       // NOTE: here we restrict to just pairs of opposite sign (conversions), but in principle this can be made
       // a configurable and check also same-sign pairs (track splitting)
       if (track1.sign() * track2.sign() > 0) {
@@ -562,8 +564,8 @@ struct AnalysisPrefilterSelection {
       uint32_t track2Candidate = (assoc2.isBarrelSelected_raw() & fPrefilterMask);
       bool track1Loose = assoc1.isBarrelSelected_bit(fPrefilterCutBit);
       bool track2Loose = assoc2.isBarrelSelected_bit(fPrefilterCutBit);
-      
-      if (! ((track1Candidate>0 && track2Loose) || (track2Candidate>0 && track1Loose))) {
+
+      if (!((track1Candidate > 0 && track2Loose) || (track2Candidate > 0 && track1Loose))) {
         continue;
       }
 
@@ -571,18 +573,19 @@ struct AnalysisPrefilterSelection {
       VarManager::FillPair<VarManager::kDecayToEE, TTrackFillMap>(track1, track2);
       // if the pair fullfils the criteria, add an entry into the prefilter map for the two tracks
       if (fPairCut->IsSelected(VarManager::fgValues)) {
-        if (fPrefilterMap.find(track1.globalIndex()) == fPrefilterMap.end() && track1Candidate>0) {
+        if (fPrefilterMap.find(track1.globalIndex()) == fPrefilterMap.end() && track1Candidate > 0) {
           fPrefilterMap[track1.globalIndex()] = track1Candidate;
         }
-        if (fPrefilterMap.find(track2.globalIndex()) == fPrefilterMap.end() && track2Candidate>0) {
+        if (fPrefilterMap.find(track2.globalIndex()) == fPrefilterMap.end() && track2Candidate > 0) {
           fPrefilterMap[track2.globalIndex()] = track2Candidate;
         }
       }
-    }  // end loop over combinations
+    } // end loop over combinations
   }
 
-  void processBarrelSkimmed(MyEvents const& events, soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts> const& assocs, MyBarrelTracks const& tracks) {
-    
+  void processBarrelSkimmed(MyEvents const& events, soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts> const& assocs, MyBarrelTracks const& tracks)
+  {
+
     fPrefilterMap.clear();
 
     for (auto& event : events) {
@@ -626,7 +629,7 @@ struct AnalysisSameEventPairing {
   Produces<aod::DimuonsAll> dimuonAllList;
   Produces<aod::DileptonFlow> dileptonFlowList;
   Produces<aod::DileptonsInfo> dileptonInfoList;
-    
+
   o2::base::MatLayerCylSet* fLUT = nullptr;
   int fCurrentRun; // needed to detect if the run changed and trigger update of calibrations etc.
 
@@ -638,7 +641,7 @@ struct AnalysisSameEventPairing {
 
   Configurable<int> fConfigMixingDepth{"cfgMixingDepth", 100, "Number of Events stored for event mixing"};
   Configurable<std::string> fConfigAddEventMixingHistogram{"cfgAddEventMixingHistogram", "", "Comma separated list of histograms"};
-  
+
   Configurable<string> fConfigCcdbUrl{"ccdb-url", "http://alice-ccdb.cern.ch", "url of the ccdb repository"};
   Configurable<string> fConfigCcdbPath{"ccdb-path", "Users/lm", "base path to the ccdb object"};
   Configurable<int64_t> fConfigNoLaterThan{"ccdb-no-later-than", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(), "latest acceptable timestamp of creation for the object"};
@@ -661,7 +664,7 @@ struct AnalysisSameEventPairing {
   Service<o2::ccdb::BasicCCDBManager> fCCDB;
 
   Filter filterEventSelected = aod::dqanalysisflags::isEventSelected == 1;
-  
+
   HistogramManager* fHistMan;
 
   // keep histogram class names in maps, so we don't have to buld their names in the pair loops
@@ -670,8 +673,8 @@ struct AnalysisSameEventPairing {
   std::map<int, std::vector<TString>> fTrackMuonHistNames;
   std::vector<AnalysisCompositeCut> fPairCuts;
 
-  uint32_t fTrackFilterMask;        // mask for the track cuts required in this task to be applied on the barrel cuts produced upstream
-  uint32_t fMuonFilterMask;         // mask for the muon cuts required in this task to be applied on the muon cuts produced upstream
+  uint32_t fTrackFilterMask; // mask for the track cuts required in this task to be applied on the barrel cuts produced upstream
+  uint32_t fMuonFilterMask;  // mask for the muon cuts required in this task to be applied on the muon cuts produced upstream
   int fNCutsBarrel;
   int fNCutsMuon;
   int fNPairCuts;
@@ -683,16 +686,16 @@ struct AnalysisSameEventPairing {
 
   void init(o2::framework::InitContext& context)
   {
-    /*bool enableBarrelHistos = context.mOptions.get<bool>("processDecayToEESkimmed") || context.mOptions.get<bool>("processDecayToEESkimmedNoTwoProngFitter") || 
-        context.mOptions.get<bool>("processDecayToEESkimmedWithCov") || context.mOptions.get<bool>("processDecayToEESkimmedWithCovNoTwoProngFitter") || 
-        context.mOptions.get<bool>("processDecayToEEVertexingSkimmed") || context.mOptions.get<bool>("processVnDecayToEESkimmed") || 
-        context.mOptions.get<bool>("processDecayToEEPrefilterSkimmed") || context.mOptions.get<bool>("processDecayToEEPrefilterSkimmedNoTwoProngFitter") || 
-        context.mOptions.get<bool>("processDecayToEESkimmedWithColl") || context.mOptions.get<bool>("processDecayToEESkimmedWithCollNoTwoProngFitter") || 
+    /*bool enableBarrelHistos = context.mOptions.get<bool>("processDecayToEESkimmed") || context.mOptions.get<bool>("processDecayToEESkimmedNoTwoProngFitter") ||
+        context.mOptions.get<bool>("processDecayToEESkimmedWithCov") || context.mOptions.get<bool>("processDecayToEESkimmedWithCovNoTwoProngFitter") ||
+        context.mOptions.get<bool>("processDecayToEEVertexingSkimmed") || context.mOptions.get<bool>("processVnDecayToEESkimmed") ||
+        context.mOptions.get<bool>("processDecayToEEPrefilterSkimmed") || context.mOptions.get<bool>("processDecayToEEPrefilterSkimmedNoTwoProngFitter") ||
+        context.mOptions.get<bool>("processDecayToEESkimmedWithColl") || context.mOptions.get<bool>("processDecayToEESkimmedWithCollNoTwoProngFitter") ||
         context.mOptions.get<bool>("processDecayToPiPiSkimmed") || context.mOptions.get<bool>("processAllSkimmed");  */
     bool enableBarrelHistos = context.mOptions.get<bool>("processAllSkimmed");
     bool enableBarrelMixingHistos = context.mOptions.get<bool>("processMixingAllSkimmed");
-    /*bool enableMuonHistos = context.mOptions.get<bool>("processDecayToMuMuSkimmed") || context.mOptions.get<bool>("processDecayToMuMuVertexingSkimmed") || 
-        context.mOptions.get<bool>("processDecayToMuMuSkimmedWithColl") || context.mOptions.get<bool>("processVnDecayToMuMuSkimmed") || 
+    /*bool enableMuonHistos = context.mOptions.get<bool>("processDecayToMuMuSkimmed") || context.mOptions.get<bool>("processDecayToMuMuVertexingSkimmed") ||
+        context.mOptions.get<bool>("processDecayToMuMuSkimmedWithColl") || context.mOptions.get<bool>("processVnDecayToMuMuSkimmed") ||
         context.mOptions.get<bool>("processAllSkimmed");*/
     bool enableMuonHistos = context.mOptions.get<bool>("processAllSkimmed");
     bool enableMuonMixingHistos = context.mOptions.get<bool>("processMixingAllSkimmed");
@@ -721,8 +724,8 @@ struct AnalysisSameEventPairing {
     if (!muonCutsStr.IsNull()) {
       objArrayMuonCuts = muonCutsStr.Tokenize(",");
     }
-        
-    // get the barrel track selection cuts   
+
+    // get the barrel track selection cuts
     string tempCuts;
     getTaskOptionValue<string>(context, "analysis-track-selection", "cfgTrackCuts", tempCuts, false);
     TString tempCutsStr = tempCuts;
@@ -745,7 +748,7 @@ struct AnalysisSameEventPairing {
               names.push_back(Form("PairsBarrelMEPP_%s", objArray->At(icut)->GetName()));
               names.push_back(Form("PairsBarrelMEMM_%s", objArray->At(icut)->GetName()));
               histNames += Form("%s;%s;%s;", names[3].Data(), names[4].Data(), names[5].Data());
-            }  
+            }
             fTrackHistNames[icut] = names;
 
             TString cutNamesStr = fConfigPairCuts.value;
@@ -758,10 +761,10 @@ struct AnalysisSameEventPairing {
                   Form("PairsBarrelSEPP_%s_%s", objArray->At(icut)->GetName(), objArrayPair->At(iPairCut)->GetName()),
                   Form("PairsBarrelSEMM_%s_%s", objArray->At(icut)->GetName(), objArrayPair->At(iPairCut)->GetName())};
                 histNames += Form("%s;%s;%s;", names[0].Data(), names[1].Data(), names[2].Data());
-                fTrackHistNames[fNCutsBarrel+icut*fNPairCuts+iPairCut] = names;
+                fTrackHistNames[fNCutsBarrel + icut * fNPairCuts + iPairCut] = names;
               } // end loop (pair cuts)
             }   // end if (pair cuts)
-          }  // end if enableBarrelHistos
+          }     // end if enableBarrelHistos
         }
       }
     }
@@ -784,9 +787,9 @@ struct AnalysisSameEventPairing {
               Form("PairsMuonSEMM_%s", objArray->At(icut)->GetName())};
             histNames += Form("%s;%s;%s;", names[0].Data(), names[1].Data(), names[2].Data());
             if (enableMuonMixingHistos) {
-              names.push_back(Form("PairsMuonMEPM_%s", objArray->At(icut)->GetName()));  
-              names.push_back(Form("PairsMuonMEPP_%s", objArray->At(icut)->GetName()));  
-              names.push_back(Form("PairsMuonMEMM_%s", objArray->At(icut)->GetName()));  
+              names.push_back(Form("PairsMuonMEPM_%s", objArray->At(icut)->GetName()));
+              names.push_back(Form("PairsMuonMEPP_%s", objArray->At(icut)->GetName()));
+              names.push_back(Form("PairsMuonMEMM_%s", objArray->At(icut)->GetName()));
               histNames += Form("%s;%s;%s;", names[3].Data(), names[4].Data(), names[5].Data());
             }
             fMuonHistNames[icut] = names;
@@ -801,14 +804,14 @@ struct AnalysisSameEventPairing {
                   Form("PairsMuonSEPP_%s_%s", objArray->At(icut)->GetName(), objArrayPair->At(iPairCut)->GetName()),
                   Form("PairsMuonSEMM_%s_%s", objArray->At(icut)->GetName(), objArrayPair->At(iPairCut)->GetName())};
                 histNames += Form("%s;%s;%s;", names[0].Data(), names[1].Data(), names[2].Data());
-                fMuonHistNames[fNCutsMuon+icut*fNCutsMuon+iPairCut] = names;
+                fMuonHistNames[fNCutsMuon + icut * fNCutsMuon + iPairCut] = names;
               } // end loop (pair cuts)
             }   // end if (pair cuts)
           }
         }
       }
     }
-    
+
     fCurrentRun = 0;
 
     fCCDB->setURL(fConfigCcdbUrl.value);
@@ -867,11 +870,12 @@ struct AnalysisSameEventPairing {
     VarManager::SetCollisionSystem((TString)fConfigCollisionSystem, fConfigCenterMassEnergy); // set collision system and center of mass energy
 
     DefineHistograms(fHistMan, histNames.Data(), fConfigAddSEPHistogram.value.data()); // define all histograms
-    VarManager::SetUseVars(fHistMan->GetUsedVars());                      // provide the list of required variables so that VarManager knows what to fill
+    VarManager::SetUseVars(fHistMan->GetUsedVars());                                   // provide the list of required variables so that VarManager knows what to fill
     fOutputList.setObject(fHistMan->GetMainHistogramList());
   }
 
-  void initParamsFromCCDB(uint64_t timestamp, bool withTwoProngFitter = true) {
+  void initParamsFromCCDB(uint64_t timestamp, bool withTwoProngFitter = true)
+  {
 
     if (fConfigUseRemoteField.value) {
       o2::parameters::GRPMagField* grpmag = fCCDB->getForTimeStamp<o2::parameters::GRPMagField>(fConfigGRPMagPath, timestamp);
@@ -902,7 +906,7 @@ struct AnalysisSameEventPairing {
       } else {
         VarManager::SetupTwoProngDCAFitter(fConfigMagField.value, true, 200.0f, 4.0f, 1.0e-3f, 0.9f, fConfigUseAbsDCA.value); // needed because take in varmanager Bz from fgFitterTwoProngBarrel for PhiV calculations
       }
-    }    
+    }
   }
 
   // Template function to run same event pairing (barrel-barrel, muon-muon, barrel-muon)
@@ -926,7 +930,7 @@ struct AnalysisSameEventPairing {
       cutNames = fConfigMuonCuts.value;
       histNames = fTrackMuonHistNames;
     }*/
-  
+
     uint32_t twoTrackFilter = 0;
     int sign1 = 0;
     int sign2 = 0;
@@ -945,11 +949,11 @@ struct AnalysisSameEventPairing {
 
       if constexpr (TPairType == VarManager::kDecayToEE || TPairType == VarManager::kDecayToPiPi) {
         twoTrackFilter = a1.isBarrelSelected_raw() & a2.isBarrelSelected_raw() & a1.isBarrelSelectedPrefilter_raw() & a2.isBarrelSelectedPrefilter_raw() & fTrackFilterMask;
-        
+
         if (!twoTrackFilter) { // the tracks must have at least one filter bit in common to continue
           continue;
         }
-                
+
         auto t1 = a1.template reducedtrack_as<TTracks>();
         auto t2 = a2.template reducedtrack_as<TTracks>();
         sign1 = t1.sign();
@@ -962,11 +966,11 @@ struct AnalysisSameEventPairing {
         if constexpr (eventHasQvector) {
           VarManager::FillPairVn<TPairType>(t1, t2);
         }
-        
-        dielectronList(event, VarManager::fgValues[VarManager::kMass], 
-                  VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi], 
-                  t1.sign() + t2.sign(), twoTrackFilter, 0);
-        
+
+        dielectronList(event, VarManager::fgValues[VarManager::kMass],
+                       VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi],
+                       t1.sign() + t2.sign(), twoTrackFilter, 0);
+
         if constexpr ((TTrackFillMap & VarManager::ObjTypes::ReducedTrackCollInfo) > 0) {
           dileptonInfoList(t1.collisionId(), event.posX(), event.posY(), event.posZ());
         }
@@ -976,12 +980,12 @@ struct AnalysisSameEventPairing {
       }
 
       if constexpr (TPairType == VarManager::kDecayToMuMu) {
-        
+
         twoTrackFilter = a1.isMuonSelected_raw() & a2.isMuonSelected_raw() & fMuonFilterMask;
         if (!twoTrackFilter) { // the tracks must have at least one filter bit in common to continue
           continue;
         }
-        
+
         auto t1 = a1.template reducedmuon_as<TTracks>();
         auto t2 = a2.template reducedmuon_as<TTracks>();
         sign1 = t1.sign();
@@ -995,38 +999,38 @@ struct AnalysisSameEventPairing {
           VarManager::FillPairVn<TPairType>(t1, t2);
         }
 
-        dimuonList(event, VarManager::fgValues[VarManager::kMass], 
-                  VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi], 
-                  t1.sign() + t2.sign(), twoTrackFilter, 0);
+        dimuonList(event, VarManager::fgValues[VarManager::kMass],
+                   VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi],
+                   t1.sign() + t2.sign(), twoTrackFilter, 0);
         if constexpr ((TTrackFillMap & VarManager::ObjTypes::ReducedMuonCollInfo) > 0) {
           dileptonInfoList(t1.collisionId(), event.posX(), event.posY(), event.posZ());
         }
-        
+
         if constexpr (TTwoProngFitter) {
           dimuonsExtraList(t1.globalIndex(), t2.globalIndex(), VarManager::fgValues[VarManager::kVertexingTauz], VarManager::fgValues[VarManager::kVertexingLz], VarManager::fgValues[VarManager::kVertexingLxy]);
           if (fConfigFlatTables.value) {
             dimuonAllList(event.posX(), event.posY(), event.posZ(), event.numContrib(),
-                        -999., -999., -999.,
-                        VarManager::fgValues[VarManager::kMass],
-                        false,
-                        VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi], t1.sign() + t2.sign(), VarManager::fgValues[VarManager::kVertexingChi2PCA],
-                        VarManager::fgValues[VarManager::kVertexingTauz], VarManager::fgValues[VarManager::kVertexingTauzErr],
-                        VarManager::fgValues[VarManager::kVertexingTauxy], VarManager::fgValues[VarManager::kVertexingTauxyErr],
-                        VarManager::fgValues[VarManager::kCosPointingAngle],
-                        VarManager::fgValues[VarManager::kPt1], VarManager::fgValues[VarManager::kEta1], VarManager::fgValues[VarManager::kPhi1], t1.sign(),
-                        VarManager::fgValues[VarManager::kPt2], VarManager::fgValues[VarManager::kEta2], VarManager::fgValues[VarManager::kPhi2], t2.sign(),
-                        t1.fwdDcaX(), t1.fwdDcaY(), t2.fwdDcaX(), t2.fwdDcaY(),
-                        0., 0.,
-                        t1.chi2MatchMCHMID(), t2.chi2MatchMCHMID(),
-                        t1.chi2MatchMCHMFT(), t2.chi2MatchMCHMFT(),
-                        t1.chi2(), t2.chi2(),
-                        -999., -999., -999., -999.,
-                        -999., -999., -999., -999.,
-                        -999., -999., -999., -999.,
-                        -999., -999., -999., -999.,
-                        t1.isAmbiguous(), t2.isAmbiguous(),
-                        VarManager::fgValues[VarManager::kU2Q2], VarManager::fgValues[VarManager::kU3Q3],
-                        VarManager::fgValues[VarManager::kCos2DeltaPhi], VarManager::fgValues[VarManager::kCos3DeltaPhi]);
+                          -999., -999., -999.,
+                          VarManager::fgValues[VarManager::kMass],
+                          false,
+                          VarManager::fgValues[VarManager::kPt], VarManager::fgValues[VarManager::kEta], VarManager::fgValues[VarManager::kPhi], t1.sign() + t2.sign(), VarManager::fgValues[VarManager::kVertexingChi2PCA],
+                          VarManager::fgValues[VarManager::kVertexingTauz], VarManager::fgValues[VarManager::kVertexingTauzErr],
+                          VarManager::fgValues[VarManager::kVertexingTauxy], VarManager::fgValues[VarManager::kVertexingTauxyErr],
+                          VarManager::fgValues[VarManager::kCosPointingAngle],
+                          VarManager::fgValues[VarManager::kPt1], VarManager::fgValues[VarManager::kEta1], VarManager::fgValues[VarManager::kPhi1], t1.sign(),
+                          VarManager::fgValues[VarManager::kPt2], VarManager::fgValues[VarManager::kEta2], VarManager::fgValues[VarManager::kPhi2], t2.sign(),
+                          t1.fwdDcaX(), t1.fwdDcaY(), t2.fwdDcaX(), t2.fwdDcaY(),
+                          0., 0.,
+                          t1.chi2MatchMCHMID(), t2.chi2MatchMCHMID(),
+                          t1.chi2MatchMCHMFT(), t2.chi2MatchMCHMFT(),
+                          t1.chi2(), t2.chi2(),
+                          -999., -999., -999., -999.,
+                          -999., -999., -999., -999.,
+                          -999., -999., -999., -999.,
+                          -999., -999., -999., -999.,
+                          t1.isAmbiguous(), t2.isAmbiguous(),
+                          VarManager::fgValues[VarManager::kU2Q2], VarManager::fgValues[VarManager::kU3Q3],
+                          VarManager::fgValues[VarManager::kCos2DeltaPhi], VarManager::fgValues[VarManager::kCos3DeltaPhi]);
           }
         }
       }
@@ -1034,15 +1038,15 @@ struct AnalysisSameEventPairing {
       /*if constexpr (TPairType == VarManager::kElectronMuon) {
         twoTrackFilter = a1.isBarrelSelected_raw() & a1.isBarrelSelectedPrefilter_raw() & a2.isMuonSelected_raw() & fTwoTrackFilterMask;
       }*/
-      
+
       if constexpr (eventHasQvector) {
         dileptonFlowList(VarManager::fgValues[VarManager::kU2Q2], VarManager::fgValues[VarManager::kU3Q3], VarManager::fgValues[VarManager::kCos2DeltaPhi], VarManager::fgValues[VarManager::kCos3DeltaPhi]);
       }
-      
+
       // Fill histograms
       for (int icut = 0; icut < ncuts; icut++) {
         if (twoTrackFilter & (uint32_t(1) << icut)) {
-          if (sign1*sign2 < 0) {
+          if (sign1 * sign2 < 0) {
             fHistMan->FillHistClass(histNames[icut][0].Data(), VarManager::fgValues);
           } else {
             if (sign1 > 0) {
@@ -1055,16 +1059,16 @@ struct AnalysisSameEventPairing {
             AnalysisCompositeCut cut = fPairCuts.at(iPairCut);
             if (!(cut.IsSelected(VarManager::fgValues))) // apply pair cuts
               continue;
-            if (sign1*sign2 < 0) {
-              fHistMan->FillHistClass(histNames[ncuts+icut*ncuts+iPairCut][0].Data(), VarManager::fgValues);
+            if (sign1 * sign2 < 0) {
+              fHistMan->FillHistClass(histNames[ncuts + icut * ncuts + iPairCut][0].Data(), VarManager::fgValues);
             } else {
               if (sign1 > 0) {
-                fHistMan->FillHistClass(histNames[ncuts+icut*ncuts+iPairCut][1].Data(), VarManager::fgValues);
+                fHistMan->FillHistClass(histNames[ncuts + icut * ncuts + iPairCut][1].Data(), VarManager::fgValues);
               } else {
-                fHistMan->FillHistClass(histNames[ncuts+icut*ncuts+iPairCut][2].Data(), VarManager::fgValues);
+                fHistMan->FillHistClass(histNames[ncuts + icut * ncuts + iPairCut][2].Data(), VarManager::fgValues);
               }
             }
-          }      // end loop (pair cuts)
+          } // end loop (pair cuts)
         }
       } // end loop (cuts)
     }   // end loop over pairs of track associations
@@ -1113,7 +1117,7 @@ struct AnalysisSameEventPairing {
 
         for (unsigned int icut = 0; icut < ncuts; icut++) {
           if (!(twoTrackFilter & (uint32_t(1) << icut))) {
-            continue;        // cut not passed
+            continue; // cut not passed
           }
           if (pairSign == 0) {
             fHistMan->FillHistClass(histNames[icut][3].Data(), VarManager::fgValues);
@@ -1124,9 +1128,9 @@ struct AnalysisSameEventPairing {
               fHistMan->FillHistClass(histNames[icut][5].Data(), VarManager::fgValues);
             }
           }
-        }   // end for (cuts)
-      }     // end for (track2)
-    }       // end for (track1)
+        } // end for (cuts)
+      }   // end for (track2)
+    }     // end for (track1)
   }
 
   // barrel-barrel and muon-muon event mixing
@@ -1154,7 +1158,7 @@ struct AnalysisSameEventPairing {
                          soa::Join<aod::ReducedMuonsAssoc, aod::MuonTrackCuts> const& muonAssocs, MyMuonTracksWithCov const& muons)
   {
     for (auto& event : events) {
-      if (event.isEventSelected()==0) {
+      if (event.isEventSelected() == 0) {
         continue;
       }
       // Reset the fValues array
@@ -1164,17 +1168,17 @@ struct AnalysisSameEventPairing {
       auto groupedBarrelAssocs = barrelAssocs.sliceBy(trackAssocsPerCollision, event.globalIndex());
       auto groupedMuonAssocs = muonAssocs.sliceBy(muonAssocsPerCollision, event.globalIndex());
 
-      if (groupedBarrelAssocs.size()>0) {
+      if (groupedBarrelAssocs.size() > 0) {
         runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMapWithCov>(event, groupedBarrelAssocs, barrelTracks);
       }
-      if (groupedMuonAssocs.size()>0) {
+      if (groupedMuonAssocs.size() > 0) {
         runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMapWithCov>(event, groupedMuonAssocs, muons);
       }
-      //runSameEventPairing<true, VarManager::kElectronMuon, gkEventFillMap, gkTrackFillMap>(event, tracks, muons);
+      // runSameEventPairing<true, VarManager::kElectronMuon, gkEventFillMap, gkTrackFillMap>(event, tracks, muons);
     }
   }
 
-  void processMixingAllSkimmed(soa::Filtered<MyEventsHashSelected>& events, 
+  void processMixingAllSkimmed(soa::Filtered<MyEventsHashSelected>& events,
                                soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts, aod::Prefilter> const& trackAssocs, MyBarrelTracksWithCov const& tracks,
                                soa::Join<aod::ReducedMuonsAssoc, aod::MuonTrackCuts> const& muonAssocs, MyMuonTracksWithCov const& muons)
   {
@@ -1182,129 +1186,129 @@ struct AnalysisSameEventPairing {
     runSameSideMixing<pairTypeMuMu, gkEventFillMap>(events, muonAssocs, muons, muonAssocsPerCollision);
   }
 
-/*
-  void processDecayToEESkimmed(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
-  }
-  void processDecayToEESkimmedNoTwoProngFitter(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
-  }
-  void processDecayToEESkimmedWithCov(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithCov> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMapWithCov>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCov, gkTrackFillMapWithCov>(event, tracks, tracks);
-  }
-  void processDecayToEESkimmedWithCovNoTwoProngFitter(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithCov> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMapWithCov>(event, VarManager::fgValues);
-    runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMapWithCov, gkTrackFillMapWithCov>(event, tracks, tracks);
-  }
-  void processDecayToEEVertexingSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithCov> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCov, gkTrackFillMapWithCov>(event, tracks, tracks);
-  }
-  void processDecayToEEPrefilterSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithPrefilter> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
-  }
-  void processDecayToEEPrefilterSkimmedNoTwoProngFitter(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithPrefilter> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
-  }
-  void processDecayToEESkimmedWithColl(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithColl> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMapWithColl>(event, tracks, tracks);
-  }
-  void processDecayToEESkimmedWithCollNoTwoProngFitter(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithColl> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMapWithColl>(event, tracks, tracks);
-  }
-  void processDecayToMuMuSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyMuonTracksSelected> const& muons)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMap>(event, muons, muons);
-  }
-  void processDecayToMuMuVertexingSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyMuonTracksSelectedWithCov> const& muons)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMapWithCov, gkMuonFillMapWithCov>(event, muons, muons);
-  }
-  void processDecayToMuMuSkimmedWithColl(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyMuonTracksSelectedWithColl> const& muons)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMapWithColl>(event, muons, muons);
-  }
-  void processVnDecayToEESkimmed(soa::Filtered<MyEventsVtxCovSelectedQvector>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMapWithCovQvector>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCovQvector, gkTrackFillMap>(event, tracks, tracks);
-  }
-  void processVnDecayToMuMuSkimmed(soa::Filtered<MyEventsVtxCovSelectedQvector>::iterator const& event, soa::Filtered<MyMuonTracksSelected> const& muons)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMapWithCovQvector>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMapWithCovQvector, gkMuonFillMap>(event, muons, muons);
-  }
-  void processElectronMuonSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks, soa::Filtered<MyMuonTracksSelected> const& muons)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kElectronMuon, gkEventFillMap, gkTrackFillMap>(event, tracks, muons);
-  }
-  void processDecayToPiPiSkimmed(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToPiPi, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
-  }
-  void processAllSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks, soa::Filtered<MyMuonTracksSelected> const& muons)
-  {
-    // Reset the fValues array
-    VarManager::ResetValues(0, VarManager::kNVars);
-    VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
-    runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
-    runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMap>(event, muons, muons);
-    runSameEventPairing<true, VarManager::kElectronMuon, gkEventFillMap, gkTrackFillMap>(event, tracks, muons);
-  }
-  */
+  /*
+    void processDecayToEESkimmed(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
+    }
+    void processDecayToEESkimmedNoTwoProngFitter(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
+    }
+    void processDecayToEESkimmedWithCov(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithCov> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMapWithCov>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCov, gkTrackFillMapWithCov>(event, tracks, tracks);
+    }
+    void processDecayToEESkimmedWithCovNoTwoProngFitter(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithCov> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMapWithCov>(event, VarManager::fgValues);
+      runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMapWithCov, gkTrackFillMapWithCov>(event, tracks, tracks);
+    }
+    void processDecayToEEVertexingSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithCov> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCov, gkTrackFillMapWithCov>(event, tracks, tracks);
+    }
+    void processDecayToEEPrefilterSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithPrefilter> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
+    }
+    void processDecayToEEPrefilterSkimmedNoTwoProngFitter(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithPrefilter> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
+    }
+    void processDecayToEESkimmedWithColl(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithColl> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMapWithColl>(event, tracks, tracks);
+    }
+    void processDecayToEESkimmedWithCollNoTwoProngFitter(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelectedWithColl> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<false, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMapWithColl>(event, tracks, tracks);
+    }
+    void processDecayToMuMuSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyMuonTracksSelected> const& muons)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMap>(event, muons, muons);
+    }
+    void processDecayToMuMuVertexingSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyMuonTracksSelectedWithCov> const& muons)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMapWithCov, gkMuonFillMapWithCov>(event, muons, muons);
+    }
+    void processDecayToMuMuSkimmedWithColl(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyMuonTracksSelectedWithColl> const& muons)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMapWithColl>(event, muons, muons);
+    }
+    void processVnDecayToEESkimmed(soa::Filtered<MyEventsVtxCovSelectedQvector>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMapWithCovQvector>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCovQvector, gkTrackFillMap>(event, tracks, tracks);
+    }
+    void processVnDecayToMuMuSkimmed(soa::Filtered<MyEventsVtxCovSelectedQvector>::iterator const& event, soa::Filtered<MyMuonTracksSelected> const& muons)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMapWithCovQvector>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMapWithCovQvector, gkMuonFillMap>(event, muons, muons);
+    }
+    void processElectronMuonSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks, soa::Filtered<MyMuonTracksSelected> const& muons)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kElectronMuon, gkEventFillMap, gkTrackFillMap>(event, tracks, muons);
+    }
+    void processDecayToPiPiSkimmed(soa::Filtered<MyEventsSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToPiPi, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
+    }
+    void processAllSkimmed(soa::Filtered<MyEventsVtxCovSelected>::iterator const& event, soa::Filtered<MyBarrelTracksSelected> const& tracks, soa::Filtered<MyMuonTracksSelected> const& muons)
+    {
+      // Reset the fValues array
+      VarManager::ResetValues(0, VarManager::kNVars);
+      VarManager::FillEvent<gkEventFillMap>(event, VarManager::fgValues);
+      runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMap, gkTrackFillMap>(event, tracks, tracks);
+      runSameEventPairing<true, VarManager::kDecayToMuMu, gkEventFillMap, gkMuonFillMap>(event, muons, muons);
+      runSameEventPairing<true, VarManager::kElectronMuon, gkEventFillMap, gkTrackFillMap>(event, tracks, muons);
+    }
+    */
   // TODO: dummy function for the case when no process function is enabled
   void processDummy(MyEvents&)
   {
@@ -1314,35 +1318,35 @@ struct AnalysisSameEventPairing {
   PROCESS_SWITCH(AnalysisSameEventPairing, processAllSkimmed, "Run all types of pairing, with skimmed tracks/muons", false);
   PROCESS_SWITCH(AnalysisSameEventPairing, processMixingAllSkimmed, "Run all types of mixed pairing, with skimmed tracks/muons", false);
   PROCESS_SWITCH(AnalysisSameEventPairing, processDummy, "Dummy function, enabled only if none of the others are enabled", false);
-/*
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmed, "Run electron-electron pairing, with skimmed tracks", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedNoTwoProngFitter, "Run electron-electron pairing, with skimmed tracks but no two prong fitter", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithCov, "Run electron-electron pairing, with skimmed covariant tracks", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithCovNoTwoProngFitter, "Run electron-electron pairing, with skimmed covariant tracks but no two prong fitter", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEEVertexingSkimmed, "Run electron-electron pairing and vertexing, with skimmed electrons", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEEPrefilterSkimmed, "Run electron-electron pairing, with skimmed tracks and prefilter from AnalysisPrefilterSelection", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEEPrefilterSkimmedNoTwoProngFitter, "Run electron-electron pairing, with skimmed tracks and prefilter from AnalysisPrefilterSelection but no two prong fitter", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithColl, "Run electron-electron pairing, with skimmed tracks and with collision information", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithCollNoTwoProngFitter, "Run electron-electron pairing, with skimmed tracks and with collision information but no two prong fitter", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToMuMuSkimmed, "Run muon-muon pairing, with skimmed muons", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToMuMuVertexingSkimmed, "Run muon-muon pairing and vertexing, with skimmed muons", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToMuMuSkimmedWithColl, "Run muon-muon pairing keeping the info of AO2D collision, with skimmed muons", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processVnDecayToEESkimmed, "Run electron-electron pairing, with skimmed tracks for vn", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processVnDecayToMuMuSkimmed, "Run muon-muon pairing, with skimmed tracks for vn", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processElectronMuonSkimmed, "Run electron-muon pairing, with skimmed tracks/muons", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToPiPiSkimmed, "Run pion-pion pairing, with skimmed tracks", false);
-  PROCESS_SWITCH(AnalysisSameEventPairing, processAllSkimmed, "Run all types of pairing, with skimmed tracks/muons", false);
-  
-  */
+  /*
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmed, "Run electron-electron pairing, with skimmed tracks", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedNoTwoProngFitter, "Run electron-electron pairing, with skimmed tracks but no two prong fitter", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithCov, "Run electron-electron pairing, with skimmed covariant tracks", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithCovNoTwoProngFitter, "Run electron-electron pairing, with skimmed covariant tracks but no two prong fitter", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEEVertexingSkimmed, "Run electron-electron pairing and vertexing, with skimmed electrons", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEEPrefilterSkimmed, "Run electron-electron pairing, with skimmed tracks and prefilter from AnalysisPrefilterSelection", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEEPrefilterSkimmedNoTwoProngFitter, "Run electron-electron pairing, with skimmed tracks and prefilter from AnalysisPrefilterSelection but no two prong fitter", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithColl, "Run electron-electron pairing, with skimmed tracks and with collision information", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToEESkimmedWithCollNoTwoProngFitter, "Run electron-electron pairing, with skimmed tracks and with collision information but no two prong fitter", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToMuMuSkimmed, "Run muon-muon pairing, with skimmed muons", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToMuMuVertexingSkimmed, "Run muon-muon pairing and vertexing, with skimmed muons", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToMuMuSkimmedWithColl, "Run muon-muon pairing keeping the info of AO2D collision, with skimmed muons", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processVnDecayToEESkimmed, "Run electron-electron pairing, with skimmed tracks for vn", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processVnDecayToMuMuSkimmed, "Run muon-muon pairing, with skimmed tracks for vn", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processElectronMuonSkimmed, "Run electron-muon pairing, with skimmed tracks/muons", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processDecayToPiPiSkimmed, "Run pion-pion pairing, with skimmed tracks", false);
+    PROCESS_SWITCH(AnalysisSameEventPairing, processAllSkimmed, "Run all types of pairing, with skimmed tracks/muons", false);
+
+    */
 };
 
 // Combines dileptons with barrel or muon tracks for either resonance or correlation analyses
-// Dileptons produced with all the selection cuts specified in the same-event pairing task are combined with the 
+// Dileptons produced with all the selection cuts specified in the same-event pairing task are combined with the
 //   tracks passing the fConfigTrackCut cut. The dileptons cuts from the same-event pairing task are auto-detected
 struct AnalysisDileptonTrack {
   Produces<aod::BmesonCandidates> BmesonsTable;
   OutputObj<THashList> fOutputList{"output"};
-  
+
   Configurable<string> fConfigTrackCut{"cfgTrackCut", "kaonPID", "Cut for the track to be correlated with the dileptons"};
   Configurable<float> fConfigDileptonLowMass{"cfgDileptonLowMass", 2.8, "Low mass cut for the dileptons used in analysis"};
   Configurable<float> fConfigDileptonHighMass{"cfgDileptonHighMass", 3.2, "High mass cut for the dileptons used in analysis"};
@@ -1364,10 +1368,10 @@ struct AnalysisDileptonTrack {
   std::map<int, TString> fHistNamesME;
 
   Service<o2::ccdb::BasicCCDBManager> fCCDB;
-  
+
   // TODO: The filter expressions seem to always use the default value of configurables, not the values from the actual configuration file
   Filter eventFilter = aod::dqanalysisflags::isEventSelected == 1;
-  Filter dileptonFilter = aod::reducedpair::pt > fConfigDileptonpTCut.value && aod::reducedpair::mass > fConfigDileptonLowMass.value && aod::reducedpair::mass < fConfigDileptonHighMass.value && aod::reducedpair::sign == 0;
+  Filter dileptonFilter = aod::reducedpair::pt > fConfigDileptonpTCut.value&& aod::reducedpair::mass > fConfigDileptonLowMass.value&& aod::reducedpair::mass < fConfigDileptonHighMass.value&& aod::reducedpair::sign == 0;
   Filter filterBarrel = aod::dqanalysisflags::isBarrelSelected > uint32_t(0);
   Filter filterMuon = aod::dqanalysisflags::isMuonSelected > uint32_t(0);
 
@@ -1431,20 +1435,20 @@ struct AnalysisDileptonTrack {
             fHistNamesDileptonTrack[icut] = Form("DileptonTrack_%s_%s", tempStr.Data(), fConfigTrackCut.value.data());
             fHistNamesDileptons[icut] = Form("DileptonsSelected_%s", tempStr.Data());
             DefineHistograms(fHistMan, fHistNamesDileptonTrack[icut], fConfigHistogramSubgroups.value.data()); // define dilepton-track histograms
-            DefineHistograms(fHistMan, fHistNamesDileptons[icut], "empty"); // define dilepton histograms
+            DefineHistograms(fHistMan, fHistNamesDileptons[icut], "empty");                                    // define dilepton histograms
             if (isBarrelME || isMuonME) {
               fHistNamesME[icut] = Form("DileptonTrackME_%s", tempStr.Data());
               DefineHistograms(fHistMan, fHistNamesME[icut], "mixedevent"); // define ME histograms
             }
           }
           if (tempStr.CompareTo(fConfigTrackCut.value.data()) == 0) {
-            fTrackCutBit = icut;                                       // the bit correspoding to the track to be combined with dileptons
+            fTrackCutBit = icut; // the bit correspoding to the track to be combined with dileptons
           }
         }
       }
     }
     if (fHistNamesDileptons.size() == 0) {
-      LOG(fatal) << " No valid dilepton cuts "; 
+      LOG(fatal) << " No valid dilepton cuts ";
     }
 
     if (context.mOptions.get<bool>("processBarrelMixedEvent")) {
@@ -1456,7 +1460,8 @@ struct AnalysisDileptonTrack {
   }
 
   // init parameters from CCDB
-  void initParamsFromCCDB(uint64_t timestamp) {
+  void initParamsFromCCDB(uint64_t timestamp)
+  {
     if (fConfigUseRemoteField.value) {
       o2::parameters::GRPMagField* grpmag = fCCDB->getForTimeStamp<o2::parameters::GRPMagField>(fConfigGRPmagPath.value, timestamp);
       float magField = 0.0;
@@ -1498,7 +1503,7 @@ struct AnalysisDileptonTrack {
       }
 
       VarManager::FillTrack<fgDileptonFillMap>(dilepton, fValuesDilepton);
-      for (int icut = 0; icut<fNCuts; icut++) {
+      for (int icut = 0; icut < fNCuts; icut++) {
         if (dilepton.filterMap_bit(icut)) {
           fHistMan->FillHistClass(fHistNamesDileptons[icut].Data(), fValuesDilepton);
         }
@@ -1525,12 +1530,12 @@ struct AnalysisDileptonTrack {
           if (track.globalIndex() == dilepton.index0Id() || track.globalIndex() == dilepton.index1Id()) {
             continue;
           }
-          
+
           VarManager::FillDileptonHadron(dilepton, track, fValuesHadron);
           VarManager::FillDileptonTrackVertexing<TCandidateType, TEventFillMap, TTrackFillMap>(event, lepton1, lepton2, track, fValuesHadron);
         }
-        
-        for (int icut = 0; icut<fNCuts; icut++) {
+
+        for (int icut = 0; icut < fNCuts; icut++) {
           if (dilepton.filterMap_bit(icut)) {
             fHistMan->FillHistClass(fHistNamesDileptonTrack[icut].Data(), fValuesHadron);
           }
@@ -1543,8 +1548,8 @@ struct AnalysisDileptonTrack {
 
   Preslice<aod::ReducedTracksAssoc> trackAssocsPerCollision = aod::reducedtrack_association::reducedeventId;
   Preslice<MyDielectronCandidates> dielectronsPerCollision = aod::reducedpair::reducedeventId;
-  
-  void processBarrelSkimmed(soa::Filtered<MyEventsVtxCovSelected> const& events, 
+
+  void processBarrelSkimmed(soa::Filtered<MyEventsVtxCovSelected> const& events,
                             soa::Filtered<soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts>> const& assocs,
                             MyBarrelTracksWithCov const& tracks, soa::Filtered<MyDielectronCandidates> const& dileptons)
   {
@@ -1566,7 +1571,7 @@ struct AnalysisDileptonTrack {
   Preslice<aod::ReducedMuonsAssoc> muonAssocsPerCollision = aod::reducedtrack_association::reducedeventId;
   Preslice<MyDimuonCandidates> dimuonsPerCollision = aod::reducedpair::reducedeventId;
 
-  void processMuonSkimmed(soa::Filtered<MyEventsVtxCovSelected> const& events, 
+  void processMuonSkimmed(soa::Filtered<MyEventsVtxCovSelected> const& events,
                           soa::Filtered<soa::Join<aod::ReducedMuonsAssoc, aod::MuonTrackCuts>> const& assocs,
                           MyMuonTracksWithCov const& tracks, soa::Filtered<MyDimuonCandidates> const& dileptons)
   {
@@ -1585,7 +1590,7 @@ struct AnalysisDileptonTrack {
     }
   }
 
-  void processBarrelMixedEvent(soa::Filtered<MyEventsHashSelected>& events, 
+  void processBarrelMixedEvent(soa::Filtered<MyEventsHashSelected>& events,
                                soa::Filtered<soa::Join<aod::ReducedTracksAssoc, aod::BarrelTrackCuts>> const& assocs,
                                MyBarrelTracksWithCov const& tracks, soa::Filtered<MyDielectronCandidates> const& dileptons)
   {
@@ -1613,17 +1618,17 @@ struct AnalysisDileptonTrack {
 
         for (auto dilepton : evDileptons) {
           VarManager::FillDileptonHadron(dilepton, track, VarManager::fgValues);
-          for (int icut=0; icut<fNCuts; icut++) {
+          for (int icut = 0; icut < fNCuts; icut++) {
             if (dilepton.filterMap_bit(icut)) {
               fHistMan->FillHistClass(fHistNamesME[icut].Data(), VarManager::fgValues);
             }
           }
         } // end for (dileptons)
       }   // end for (assocs)
-    } // end event loop
+    }     // end event loop
   }
 
-  void processMuonMixedEvent(soa::Filtered<MyEventsHashSelected>& events, 
+  void processMuonMixedEvent(soa::Filtered<MyEventsHashSelected>& events,
                              soa::Filtered<soa::Join<aod::ReducedMuonsAssoc, aod::MuonTrackCuts>> const& assocs,
                              MyMuonTracksWithCov const& tracks, soa::Filtered<MyDimuonCandidates> const& dileptons)
   {
@@ -1644,22 +1649,22 @@ struct AnalysisDileptonTrack {
       evAssocs.bindExternalIndices(&events);
 
       for (auto& assoc : evAssocs) {
-        
+
         if (!assoc.isMuonSelected_bit(fTrackCutBit)) {
           continue;
         }
         auto track = assoc.template reducedmuon_as<MyMuonTracksWithCov>();
-        
+
         for (auto dilepton : evDileptons) {
           VarManager::FillDileptonHadron(dilepton, track, VarManager::fgValues);
-          for (int icut=0; icut<fNCuts; icut++) {
+          for (int icut = 0; icut < fNCuts; icut++) {
             if (dilepton.filterMap_bit(icut)) {
               fHistMan->FillHistClass(fHistNamesME[icut].Data(), VarManager::fgValues);
             }
           }
         } // end for (dileptons)
       }   // end for (assocs)
-    } // end event loop
+    }     // end event loop
   }
 
   void processDummy(MyEvents&)
@@ -1682,8 +1687,7 @@ WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
     adaptAnalysisTask<AnalysisMuonSelection>(cfgc),
     adaptAnalysisTask<AnalysisPrefilterSelection>(cfgc),
     adaptAnalysisTask<AnalysisSameEventPairing>(cfgc),
-    adaptAnalysisTask<AnalysisDileptonTrack>(cfgc)
-  };
+    adaptAnalysisTask<AnalysisDileptonTrack>(cfgc)};
 }
 
 void DefineHistograms(HistogramManager* histMan, TString histClasses, const char* histGroups)
