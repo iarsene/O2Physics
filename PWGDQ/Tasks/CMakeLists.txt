@@ -14,6 +14,11 @@ o2physics_add_dpl_workflow(table-reader
                     PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::PWGDQCore
                     COMPONENT_NAME Analysis)
 
+o2physics_add_dpl_workflow(table-reader-with-assoc
+                    SOURCES tableReader_withAssoc.cxx
+                    PUBLIC_LINK_LIBRARIES O2::Framework O2::DetectorsBase O2Physics::AnalysisCore O2Physics::PWGDQCore
+                    COMPONENT_NAME Analysis)                                       
+                    
 o2physics_add_dpl_workflow(efficiency
                     SOURCES dqEfficiency.cxx
                     PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::PWGDQCore
@@ -26,6 +31,11 @@ o2physics_add_dpl_workflow(filter-pp
 
 o2physics_add_dpl_workflow(filter-pp-with-association
                     SOURCES filterPPwithAssociation.cxx
+                    PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::PWGDQCore
+                    COMPONENT_NAME Analysis)
+
+o2physics_add_dpl_workflow(filter-pp-with-association-with-common-associator
+                    SOURCES filterPPwithAssociation_withCommonAssociator.cxx
                     PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::PWGDQCore
                     COMPONENT_NAME Analysis)
 
