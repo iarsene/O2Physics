@@ -535,9 +535,9 @@ struct DQFilterPPTask {
   std::map<uint64_t, uint64_t> fFiltersMap;           // map of filters for events that passed at least one filter
   std::map<uint64_t, std::vector<bool>> fCEFPfilters; // map of CEFP filters for events that passed at least one filter
 
-  uint32_t fPairingLSBarrel;                          // used to set in which cut setting LS pairs will be analysed
-  uint32_t fPairingLSMuon;                            // used to set in which cut setting LS pairs will be analysed
-  uint32_t fPairingLSBarrelMuon;                      // used to set in which cut setting LS pairs will be analysed
+  uint32_t fPairingLSBarrel;     // used to set in which cut setting LS pairs will be analysed
+  uint32_t fPairingLSMuon;       // used to set in which cut setting LS pairs will be analysed
+  uint32_t fPairingLSBarrelMuon; // used to set in which cut setting LS pairs will be analysed
 
   void DefineCuts()
   {
@@ -862,7 +862,7 @@ struct DQFilterPPTask {
           }
         }
       }
-      
+
       // run pairing if there is at least one selection that requires it
       pairFilter = 0;
       if (pairingMask > 0) {
